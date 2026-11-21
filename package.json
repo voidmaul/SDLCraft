@@ -2,7 +2,7 @@
   "name": "sdlc-interactive-explorer",
   "private": true,
   "version": "1.0.0",
-  "description": "SDLC Interactive Explorer for Information Systems — Educational web app for SI students",
+  "description": "SDLC Interactive Explorer for Information Systems. Media pembelajaran interaktif mahasiswa Sistem Informasi.",
   "type": "module",
   "scripts": {
     "dev": "vite",

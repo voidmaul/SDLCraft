@@ -16,6 +16,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Trophy,
+  HelpCircle,
 } from "lucide-react";
 import { sdlcPhases, type SdlcPhase } from "../data/sdlcData";
 import { useAudio } from "../hooks/useAudio";
@@ -39,7 +40,8 @@ interface PhaseCardProps {
 }
 
 function PhaseCard({ phase, index, isSelected, isLearned, onClick }: PhaseCardProps) {
-  const Icon = iconMap[phase.icon];
+  // Fallback agar tidak render crash jika ikon belum terdaftar di iconMap
+  const Icon: React.ElementType = iconMap[phase.icon] || HelpCircle;
   const colors = phase.theme;
 
   return (
@@ -98,7 +100,8 @@ interface DetailPanelProps {
 
 function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "roles" | "artifacts" | "casestudy">("overview");
-  const Icon = iconMap[phase.icon];
+  // Fallback agar tidak render crash jika ikon belum terdaftar di iconMap
+  const Icon: React.ElementType = iconMap[phase.icon] || HelpCircle;
   const colors = phase.theme;
 
   const tabs = [
@@ -365,7 +368,7 @@ export default function SdlcRoadmap() {
               </p>
             </div>
 
-            {/* Learning Tracker — compact horizontal on mobile */}
+            {/* Learning Tracker: compact horizontal on mobile */}
             <div className="bg-white border-2 border-slate-900 rounded-2xl p-3 sm:p-4 shadow-neo">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-black text-slate-700 uppercase tracking-wider">Progress Belajar</span>
@@ -388,7 +391,7 @@ export default function SdlcRoadmap() {
           </div>
         </motion.div>
 
-        {/* Phase grid — 4 col on mobile, 7 col on lg */}
+        {/* Phase grid: 4 col on mobile, 7 col on lg */}
         <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-4 relative">
           {sdlcPhases.map((phase, index) => (
             <PhaseCard

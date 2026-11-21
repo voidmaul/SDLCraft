@@ -45,7 +45,8 @@ interface SummaryScreenProps {
 
 export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryScreenProps) {
   const correct = answers.filter((a) => a.isCorrect).length;
-  const score = Math.round((correct / answers.length) * 100);
+  // Hindari division-by-zero jika answers kosong (defensif)
+  const score = answers.length > 0 ? Math.round((correct / answers.length) * 100) : 0;
   const badge = getScoreBadge(score);
   const BadgeIcon = badge.icon;
   const [downloading, setDownloading] = useState(false);
@@ -157,7 +158,7 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
         {score >= 70 ? (
           <p className="text-xs text-emerald-600 font-bold mt-3">🎉 Selamat! Kamu telah lulus!</p>
         ) : (
-          <p className="text-xs text-slate-400 mt-3">Jangan menyerah — terus eksplorasi dan coba lagi!</p>
+          <p className="text-xs text-slate-400 mt-3">Tetap semangat, terus eksplorasi dan coba lagi kapan saja!</p>
         )}
       </motion.div>
 

@@ -88,7 +88,7 @@ export const sdlcPhases: SdlcPhase[] = [
       "Penetapan KPI & success criteria",
     ],
     caseStudy: {
-      projectName: "Sistem Informasi Rumah Sakit (SIMRS) — RSU Medika Nusantara",
+      projectName: "Sistem Informasi Rumah Sakit SIMRS di RSU Medika Nusantara",
       description:
         "RSU Medika Nusantara mengidentifikasi antrian rawat jalan yang tidak terkelola sebagai masalah utama. BA melakukan wawancara dengan Direktur RS dan kepala poli untuk menyusun Business Case yang menunjukkan potensi efisiensi 40% waktu tunggu pasien.",
       highlight:
@@ -151,7 +151,7 @@ export const sdlcPhases: SdlcPhase[] = [
       "Prioritisasi kebutuhan (MoSCoW Method)",
     ],
     caseStudy: {
-      projectName: "Sistem E-Kampus — Universitas Digital Nusantara",
+      projectName: "Sistem E-Kampus Universitas Digital Nusantara",
       description:
         "SA mewawancarai Kepala BAAK, dosen, dan mahasiswa untuk mendokumentasikan 47 use case pada modul akademik. Ditemukan kebutuhan tersembunyi: integrasi dengan sistem keuangan dan presensi yang awalnya tidak disebutkan klien.",
       highlight:
@@ -215,7 +215,7 @@ export const sdlcPhases: SdlcPhase[] = [
       "Penetapan standar coding & naming convention",
     ],
     caseStudy: {
-      projectName: "Platform E-Commerce UMKM — Pasar Digital Lokal",
+      projectName: "Platform Belanja Online UMKM Pasar Digital Lokal",
       description:
         "Tim desain merancang ERD dengan 32 entitas untuk mendukung multi-vendor. DBA menerapkan normalisasi 3NF dan merancang strategi partisi tabel untuk mengantisipasi 100.000+ transaksi/hari. UI Designer membuat 80+ screen mockup di Figma.",
       highlight:
@@ -279,7 +279,7 @@ export const sdlcPhases: SdlcPhase[] = [
       "Integrasi CI/CD pipeline otomatis",
     ],
     caseStudy: {
-      projectName: "Aplikasi Presensi Digital — Dinas Pendidikan Kota",
+      projectName: "Aplikasi Presensi Digital Dinas Pendidikan Kota",
       description:
         "Tim 6 developer menggunakan Git Flow dengan branch master/develop/feature. Setiap feature branch wajib melewati code review 2 orang sebelum merge. CI/CD dengan GitHub Actions menjalankan unit test otomatis pada setiap pull request.",
       highlight:
@@ -342,7 +342,7 @@ export const sdlcPhases: SdlcPhase[] = [
       "Pelaksanaan UAT & pengumpulan sign-off klien",
     ],
     caseStudy: {
-      projectName: "Sistem Informasi Perpustakaan — Universitas Regional",
+      projectName: "Sistem Informasi Perpustakaan Universitas Regional",
       description:
         "QA menyusun 185 test case dari 47 use case. Ditemukan 23 bug kritis selama blackbox testing, termasuk kesalahan kalkulasi denda keterlambatan. UAT dilaksanakan 2 iterasi bersama 15 staf perpustakaan sebelum sign-off.",
       highlight:
@@ -405,9 +405,9 @@ export const sdlcPhases: SdlcPhase[] = [
       "Aktivasi monitoring & alerting system",
     ],
     caseStudy: {
-      projectName: "Portal Layanan Publik — Pemerintah Kabupaten X",
+      projectName: "Portal Layanan Publik Pemerintah Kabupaten X",
       description:
-        "Deployment dilakukan Sabtu dini hari (00.00–04.00) untuk meminimalkan gangguan layanan. Tim SA menyiapkan rollback plan dengan snapshot database T-1 jam. Pelatihan 120 staf kelurahan dilaksanakan dalam 3 batch selama seminggu.",
+        "Peluncuran sistem dilakukan Sabtu dini hari pukul 00.00 sampai 04.00 untuk meminimalkan gangguan layanan. Tim analis menyiapkan rencana pemulihan dengan data cadangan satu jam sebelumnya. Pelatihan 120 staf kelurahan dilaksanakan dalam 3 sesi selama seminggu.",
       highlight:
         "Output kunci: Zero-downtime deployment, 120 staf terlatih, monitoring aktif dengan alerting via Telegram Bot.",
     },
@@ -468,7 +468,7 @@ export const sdlcPhases: SdlcPhase[] = [
       "Perencanaan versi rilis berikutnya",
     ],
     caseStudy: {
-      projectName: "SIMRS RSU Medika Nusantara — 6 Bulan Pasca-Go Live",
+      projectName: "Evaluasi SIMRS RSU Medika Nusantara Enam Bulan Pasca Rilis",
       description:
         "Tim SA mengelola 34 change request dalam 6 bulan pertama: 12 bug kritis ditangani < 4 jam (sesuai SLA), 22 enhancement request diprioritaskan untuk versi 1.1. Ditemukan bottleneck performa di modul pelaporan yang diselesaikan dengan query optimization.",
       highlight:

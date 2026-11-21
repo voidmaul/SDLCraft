@@ -10,7 +10,7 @@ export function AgileVisualization() {
   return (
     <div className="p-4" aria-label="Visualisasi Model Agile Scrum">
       <p className="text-[10px] text-center text-slate-500 mb-3 font-black uppercase tracking-widest">
-        Siklus Sprint Iteratif — Terus Berulang Hingga Backlog Habis
+        Siklus Sprint Berkala yang terus berulang hingga kebutuhan terpenuhi
       </p>
 
       <svg
@@ -81,7 +81,7 @@ export function AgileVisualization() {
 
       <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 rounded-xl p-3 border-2 border-slate-200">
         <Zap className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" aria-hidden="true" />
-        Tiap sprint (2–4 minggu) hasilkan increment fungsional yang bisa di-review klien
+        Setiap sprint dua sampai empat minggu menghasilkan fitur siap pakai yang dapat langsung diuji coba
       </div>
     </div>
   );

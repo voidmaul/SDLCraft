@@ -6,7 +6,7 @@ export function WaterfallVisualization() {
   return (
     <div className="p-5 space-y-2" aria-label="Visualisasi Model Waterfall">
       <p className="text-[10px] text-center text-slate-500 mb-3 font-black uppercase tracking-widest">
-        Aliran Linear Berurutan — Tidak Dapat Mundur Tanpa Revisi
+        Aliran Linear Berurutan tanpa bisa melompat mundur sebelum selesai
       </p>
       {waterfallPhases.map((phase, i) => (
         <motion.div

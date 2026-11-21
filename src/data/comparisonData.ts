@@ -70,7 +70,7 @@ export const comparisonData: ComparisonRow[] = [
     criterion: "Waktu ke Produk Pertama",
     icon: Clock,
     waterfall: { text: "Lama; produk baru tersedia di akhir proyek", positive: false },
-    agile: { text: "Cepat; increment fungsional tiap 2–4 minggu", positive: true },
+    agile: { text: "Cepat; ada hasil fungsional tiap dua sampai empat minggu", positive: true },
   },
   {
     criterion: "Dokumentasi",
@@ -94,7 +94,7 @@ export const comparisonData: ComparisonRow[] = [
     criterion: "Ukuran & Kompleksitas Tim",
     icon: Zap,
     waterfall: { text: "Cocok untuk tim besar dengan peran spesialis jelas", positive: true },
-    agile: { text: "Optimal untuk tim kecil self-organizing (5–9 orang)", positive: true },
+    agile: { text: "Optimal untuk tim mandiri beranggotakan 5 sampai 9 orang", positive: true },
   },
 ];
 
@@ -117,7 +117,7 @@ export const matcherQuestions: MatcherQuestion[] = [
     id: "timeline",
     question: "Apakah klien butuh demo/prototype cepat?",
     options: [
-      { label: "Ya, perlu hasil nyata dalam 1–2 bulan", value: "agile" },
+      { label: "Ya, perlu hasil nyata dalam 1 atau 2 bulan", value: "agile" },
       { label: "Tidak, klien bisa menunggu produk final", value: "waterfall" },
     ],
   },

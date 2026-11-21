@@ -27,11 +27,11 @@ export default function ModelComparison() {
             Waterfall vs. Agile Scrum
           </h2>
           <p className="text-slate-500 max-w-md text-sm mt-2">
-            Pahami kapan harus merekomendasikan masing-masing model kepada klien — gunakan Model Matcher untuk mendapat rekomendasi instan.
+            Pahami kapan waktu yang pas untuk merekomendasikan masing-masing model kepada klien, atau gunakan Model Matcher untuk rekomendasi cepat.
           </p>
         </motion.div>
 
-        {/* Visualizations + Matcher — stack on mobile, side-by-side on lg */}
+        {/* Visualizations + Matcher: stack on mobile, side-by-side on lg */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8 sm:mb-10">
           {/* Visualizations col */}
           <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -108,7 +108,7 @@ export default function ModelComparison() {
           </div>
         </div>
 
-        {/* Comparison table — horizontal scroll on mobile */}
+        {/* Comparison table: horizontal scroll on mobile */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}

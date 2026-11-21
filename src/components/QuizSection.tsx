@@ -29,7 +29,7 @@ export default function QuizSection() {
   const [streak, setStreak] = useState(0);
   const streakRef = useRef(0);
 
-  // userName — persisted in localStorage
+  // userName: persisted in localStorage
   const [userName, setUserName] = useState<string>(() => {
     try {
       return localStorage.getItem("sdlc_user_name") ?? "";
@@ -51,7 +51,11 @@ export default function QuizSection() {
 
   const currentQuestion = quizQuestions[currentIndex];
   const totalQuestions = quizQuestions.length;
-  const progress = ((currentIndex + (answered ? 1 : 0)) / totalQuestions) * 100;
+  // Hindari division-by-zero jika data kuis kosong (defensif)
+  const progress =
+    totalQuestions > 0
+      ? ((currentIndex + (answered ? 1 : 0)) / totalQuestions) * 100
+      : 0;
 
   const handleStart = () => {
     if (!isNameValid) return;
@@ -129,7 +133,7 @@ export default function QuizSection() {
             Kuis Studi Kasus SDLC
           </h2>
           <p className="text-slate-500 max-w-md text-sm mt-2">
-            <strong>{totalQuestions} soal berbasis skenario nyata</strong> — bukan sekadar hafalan.
+            Tersedia <strong>{totalQuestions} soal seru berbasis skenario nyata</strong> dan bukan sekadar hafalan teori.
             Raih lencana kompetensimu dan unduh badge IG Story!
           </p>
         </motion.div>
@@ -176,13 +180,13 @@ export default function QuizSection() {
                 </div>
                 <ul className="text-xs text-slate-700 space-y-1 font-semibold">
                   <li>
-                    • Skor &lt; 60% → <strong>Junior Analyst</strong>
+                    • Skor kurang dari 60% → <strong>Junior Analyst</strong>
                   </li>
                   <li>
-                    • Skor 60–85% → <strong>System Analyst</strong>
+                    • Skor 60 sampai 85% → <strong>System Analyst</strong>
                   </li>
                   <li>
-                    • Skor &gt; 85% → <strong>Lead Solution Architect</strong>
+                    • Skor di atas 85% → <strong>Lead Solution Architect</strong>
                   </li>
                 </ul>
               </div>
@@ -234,7 +238,7 @@ export default function QuizSection() {
                 </AnimatePresence>
               </div>
 
-              {/* Start button — full width on mobile */}
+              {/* Start button: full width on mobile */}
               <motion.button
                 whileHover={isNameValid ? { y: -2, boxShadow: "6px 6px 0px #FFC908" } : {}}
                 whileTap={isNameValid ? { y: 1 } : {}}

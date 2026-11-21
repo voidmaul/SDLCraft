@@ -23,7 +23,9 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
         </button>
       </div>
       {answers.map((record, i) => {
-        const q = quizQuestions.find((item) => item.id === record.questionId)!;
+        const q = quizQuestions.find((item) => item.id === record.questionId);
+        // Jika data soal tidak ditemukan (mis. data berubah), lewati rekaman tersebut
+        if (!q) return null;
         return (
           <motion.div
             key={record.questionId}

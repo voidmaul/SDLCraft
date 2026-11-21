@@ -77,7 +77,7 @@ export const quizQuestions: QuizQuestion[] = [
       "Konflik kebutuhan adalah hal normal dalam analisis sistem. SA wajib mendokumentasikan semua kebutuhan (termasuk yang berkonflik), mengfasilitasi resolusi melalui stakeholder yang berwenang, dan mengeksplorasi solusi win-win. Mendokumentasikan dalam SRS sebagai 'requirement conflict' kemudian menetapkan keputusan resmi via stakeholder sign-off adalah proses yang benar.",
     wrongExplanations: {
       a: "SA tidak boleh memihak tanpa dasar. Keputusan harus melalui proses formal dengan stakeholder yang berwenang, bukan berdasarkan hierarki pengguna.",
-      b: "Sama seperti opsi A — mengikuti satu pihak tanpa deliberasi adalah kesalahan. Kebutuhan dokter bisa jadi memiliki justifikasi operasional yang valid.",
+      b: "Mirip seperti opsi A, memihak salah satu pihak tanpa musyawarah merupakan tindakan keliru karena kebutuhan dokter juga berdasar pada alasan operasional yang valid.",
       d: "Mengabaikan konflik dan melempar tanggung jawab ke developer adalah tanda kegagalan SA. Developer tidak memiliki konteks bisnis untuk membuat keputusan ini.",
     },
   },
@@ -118,7 +118,7 @@ export const quizQuestions: QuizQuestion[] = [
     ],
     correctOptionId: "b",
     explanation:
-      "Tabel tersebut melanggar 2NF dan 3NF karena data customer (Name, Email, Phone) dan data product (Name, Price) bergantung pada entitas lain, bukan hanya OrderID. Ini menyebabkan: (1) Data redundansi — data customer terulang di setiap order, (2) Update anomaly — mengubah email customer harus update banyak baris. Solusi benar: normalisasi ke tabel terpisah dengan relasi foreign key.",
+      "Tabel tersebut melanggar aturan 2NF dan 3NF karena data pelanggan dan data produk bercampur dalam satu tempat. Hal ini mengakibatkan data pelanggan berulang kali tercatat secara berlebihan dan menyulitkan pembaruan data. Solusi yang tepat adalah normalisasi ke dalam tabel terpisah dengan relasi kunci asing.",
     wrongExplanations: {
       a: "Satu tabel besar (flat table) untuk data relasional menyebabkan redundansi parah, anomali insert/update/delete, dan query yang tidak efisien saat data besar.",
       c: "Penamaan kolom bukan masalah utama. Masalah struktural (normalisasi) jauh lebih kritis dari konvensi penamaan.",
@@ -142,7 +142,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Ini adalah skenario klasik scope creep di Waterfall. Prosedur yang benar adalah: (1) Jangan langsung implementasi, (2) Dokumentasikan sebagai Change Request, (3) Lakukan Impact Analysis menyeluruh pada modul yang terdampak, (4) Estimasi tambahan waktu & biaya, (5) Dapatkan persetujuan formal sponsor/klien dengan kontrak tambahan, (6) Update SRS & rencana testing. Ini melindungi tim dari over-commitment dan klien dari kejutan biaya.",
     wrongExplanations: {
-      a: "Implementasi langsung tanpa analisis dampak adalah resep bencana — dapat merusak fitur yang sudah berfungsi dan menunda timeline tanpa kompensasi biaya.",
+      a: "Menerapkan perubahan tanpa analisis dampak sangat berisiko merusak fitur yang sudah berjalan dan menunda jadwal proyek tanpa kompensasi biaya.",
       b: "Menolak mentah-mentah tidak profesional. Kebutuhan bisnis bisa valid; proses Change Request adalah jalan tengah yang benar.",
       d: "Tidak memberitahu klien tentang implikasi adalah pelanggaran etika profesional dan dapat berujung pada perselisihan kontrak.",
     },
@@ -157,7 +157,7 @@ export const quizQuestions: QuizQuestion[] = [
     options: [
       { id: "a", text: "Perbaiki semua bug secara berurutan dari yang ditemukan pertama (FIFO)." },
       { id: "b", text: "Perbaiki bug minor dulu karena lebih mudah dan cepat selesai, baru yang besar." },
-      { id: "c", text: "Prioritaskan: (1) Critical bugs dahulu — blokir UAT sampai selesai, (2) Mayor bugs berikutnya, (3) Minor bugs terakhir. Gunakan severity & priority matrix untuk tracking." },
+      { id: "c", text: "Selesaikan bug kritis terlebih dahulu yang menghambat pengujian, kemudian perbaiki bug fungsional, dan terakhir bug tampilan dengan panduan matriks prioritas." },
       { id: "d", text: "Laporkan semua bug ke klien dan biarkan klien yang memutuskan mana yang perlu diperbaiki." },
     ],
     correctOptionId: "c",
@@ -166,7 +166,7 @@ export const quizQuestions: QuizQuestion[] = [
     wrongExplanations: {
       a: "FIFO tidak mempertimbangkan dampak bisnis. Bug kritis yang ditemukan terakhir bisa memblokir seluruh proyek jika tidak diprioritaskan.",
       b: "'Quick wins' di bug minor memang terasa memuaskan, tapi meninggalkan bug kritis (crash) adalah risiko bisnis yang tidak dapat diterima.",
-      d: "Triase bug adalah tanggung jawab QA — melimpahkan keputusan teknis ke klien non-teknis adalah abdikasi tanggung jawab profesional.",
+      d: "Menentukan urutan penanganan bug adalah kewajiban tim QA, sehingga menyerahkan keputusan teknis kepada klien yang awam merupakan tindakan yang kurang profesional.",
     },
   },
   {
@@ -186,7 +186,7 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Perbedaan versi database antara staging dan production adalah risiko tinggi untuk sistem keuangan. PostgreSQL 13 vs 15 memiliki perbedaan signifikan dalam syntax SQL, fungsi built-in, dan perilaku query optimizer. Prinsip 'environment parity' (staging = production) adalah best practice deployment. Menunda dan menyamakan environment adalah keputusan profesional yang melindungi integritas data keuangan.",
     wrongExplanations: {
-      a: "Perbedaan minor versi PostgreSQL bisa menyebabkan query gagal, fungsi deprecated, atau perilaku berbeda — terutama kritis untuk sistem keuangan.",
+      a: "Perbedaan versi database sekecil apa pun dapat membuat query gagal atau berperilaku tak terduga, situasi yang sangat berbahaya bagi sistem finansial.",
       c: "'Deploy and pray' adalah anti-pattern berbahaya untuk sistem keuangan. Jika terjadi korupsi data, rollback tidak bisa mengembalikan kepercayaan stakeholder.",
       d: "Pembatalan total berlebihan. Masalah ini bisa diselesaikan dengan upgrade dan testing tambahan dalam waktu yang relatif singkat.",
     },
@@ -230,8 +230,8 @@ export const quizQuestions: QuizQuestion[] = [
     explanation:
       "Agile Scrum adalah pilihan tepat karena: (1) Kebutuhan berubah cepat → Agile mengakomodasi perubahan di setiap sprint, (2) Demo 3 bulan → Sprint 2 minggu menghasilkan increment yang bisa didemonstrasikan, (3) Tim kecil (8 orang) → Scrum dirancang untuk tim kecil self-organizing. Waterfall tidak cocok karena tidak fleksibel terhadap perubahan regulasi yang sering. Meski regulasi ketat, Agile tetap bisa menghasilkan dokumentasi yang diperlukan dalam sprint definition of done.",
     wrongExplanations: {
-      a: "Waterfall mengasumsikan kebutuhan stabil — kebalikan dari situasi ini. Regulasi OJK yang berubah akan menyebabkan scope creep besar dalam Waterfall.",
-      c: "Spiral Model cocok untuk proyek besar dan berisiko tinggi dengan tim berpengalaman — terlalu berat untuk startup dengan tim junior dan tenggat 3 bulan.",
+      a: "Model Waterfall mengandalkan kebutuhan yang tetap sejak awal, sedangkan perubahan regulasi di tengah proyek justru akan memicu penumpukan beban kerja tanpa akhir.",
+      c: "Model Spiral diperuntukkan bagi proyek skala besar dengan tim berpengalaman, sehingga kurang tepat bagi perusahaan perintis dengan waktu yang terbatas.",
       d: "Prototype Model adalah pendekatan, bukan framework manajemen proyek lengkap. Tidak ada struktur tim, sprint, dan delivery yang clear seperti Scrum.",
     },
   },
