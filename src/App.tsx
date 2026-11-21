@@ -287,7 +287,7 @@ function Footer() {
               </div>
               <div>
                 <p className="font-black text-slate-900 text-base tracking-tight">SDLCraft</p>
-                <p className="text-xs text-slate-500 font-mono">Belajar Rekayasa Perangkat Lunak</p>
+                <p className="text-xs text-slate-500 font-mono">Belajar SDLC Interakti</p>
               </div>
             </div>
             <p className="text-xs text-slate-600 max-w-sm leading-relaxed">
