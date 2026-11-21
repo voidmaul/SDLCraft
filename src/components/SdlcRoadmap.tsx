@@ -18,7 +18,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { sdlcPhases, type SdlcPhase } from "../data/sdlcData";
-import { type AudioCtxRef, playChime } from "../utils/audio";
+import { useAudio } from "../hooks/useAudio";
 
 const iconMap: Record<string, React.ElementType> = {
   ClipboardList,
@@ -28,62 +28,6 @@ const iconMap: Record<string, React.ElementType> = {
   TestTube2,
   Rocket,
   Wrench,
-};
-
-// Hacktiv8-inspired high-contrast phase palette
-const phaseColorMap: Record<
-  string,
-  { accent: string; bg: string; border: string; badge: string; tag: string }
-> = {
-  planning: {
-    accent: "text-violet-700",
-    bg: "bg-violet-50",
-    border: "border-violet-900",
-    badge: "bg-violet-100 text-violet-800",
-    tag: "bg-violet-900 text-violet-100",
-  },
-  analysis: {
-    accent: "text-sky-700",
-    bg: "bg-sky-50",
-    border: "border-sky-900",
-    badge: "bg-sky-100 text-sky-800",
-    tag: "bg-sky-900 text-sky-100",
-  },
-  design: {
-    accent: "text-cyan-700",
-    bg: "bg-cyan-50",
-    border: "border-cyan-900",
-    badge: "bg-cyan-100 text-cyan-800",
-    tag: "bg-cyan-900 text-cyan-100",
-  },
-  development: {
-    accent: "text-emerald-700",
-    bg: "bg-emerald-50",
-    border: "border-emerald-900",
-    badge: "bg-emerald-100 text-emerald-800",
-    tag: "bg-emerald-900 text-emerald-100",
-  },
-  testing: {
-    accent: "text-amber-700",
-    bg: "bg-amber-50",
-    border: "border-amber-900",
-    badge: "bg-amber-100 text-amber-800",
-    tag: "bg-amber-900 text-amber-100",
-  },
-  deployment: {
-    accent: "text-orange-700",
-    bg: "bg-orange-50",
-    border: "border-orange-900",
-    badge: "bg-orange-100 text-orange-800",
-    tag: "bg-orange-900 text-orange-100",
-  },
-  maintenance: {
-    accent: "text-rose-700",
-    bg: "bg-rose-50",
-    border: "border-rose-900",
-    badge: "bg-rose-100 text-rose-800",
-    tag: "bg-rose-900 text-rose-100",
-  },
 };
 
 interface PhaseCardProps {
@@ -96,7 +40,7 @@ interface PhaseCardProps {
 
 function PhaseCard({ phase, index, isSelected, isLearned, onClick }: PhaseCardProps) {
   const Icon = iconMap[phase.icon];
-  const colors = phaseColorMap[phase.id];
+  const colors = phase.theme;
 
   return (
     <motion.button
@@ -155,7 +99,7 @@ interface DetailPanelProps {
 function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState<"overview" | "roles" | "artifacts" | "casestudy">("overview");
   const Icon = iconMap[phase.icon];
-  const colors = phaseColorMap[phase.id];
+  const colors = phase.theme;
 
   const tabs = [
     { id: "overview" as const, label: "Tujuan", icon: BookOpen },
@@ -217,21 +161,26 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b-2 border-slate-200 bg-slate-50 overflow-x-auto">
+      <div className="flex border-b-2 border-slate-200 bg-slate-50 overflow-x-auto" role="tablist" aria-label="Detail Fase SDLC">
         {tabs.map((tab) => {
           const TabIcon = tab.icon;
+          const isSelected = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={isSelected}
+              aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-1.5 px-4 py-3 text-xs font-bold whitespace-nowrap border-b-2 transition-colors -mb-0.5
                 ${
-                  activeTab === tab.id
+                  isSelected
                     ? `${colors.accent} border-current bg-white`
                     : "text-slate-500 border-transparent hover:text-slate-700 hover:bg-white/60"
                 }`}
             >
-              <TabIcon className="w-3.5 h-3.5" />
+              <TabIcon className="w-3.5 h-3.5" aria-hidden="true" />
               {tab.label}
             </button>
           );
@@ -242,6 +191,9 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
+          role="tabpanel"
+          id={`tabpanel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
           initial={{ opacity: 0, x: 8 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -8 }}
@@ -354,26 +306,35 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
   );
 }
 
-interface SdlcRoadmapProps {
-  audioRef: AudioCtxRef;
-}
-
-export default function SdlcRoadmap({ audioRef }: SdlcRoadmapProps) {
+export default function SdlcRoadmap() {
+  const { playChime } = useAudio();
   const [selectedPhase, setSelectedPhase] = useState<SdlcPhase | null>(null);
-  const [learnedPhases, setLearnedPhases] = useState<Set<string>>(new Set());
+  const [learnedPhases, setLearnedPhases] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem("sdlc_learned_phases");
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
 
   const handlePhaseClick = (phase: SdlcPhase) => {
     setSelectedPhase((prev) => (prev?.id === phase.id ? null : phase));
-    playChime(audioRef);
+    playChime();
   };
 
   const handleMarkLearned = (phaseId: string) => {
     setLearnedPhases((prev) => {
       const next = new Set(prev);
       next.add(phaseId);
+      try {
+        localStorage.setItem("sdlc_learned_phases", JSON.stringify(Array.from(next)));
+      } catch {
+        // ignore storage errors
+      }
       return next;
     });
-    playChime(audioRef);
+    playChime();
   };
 
   const learnedCount = learnedPhases.size;

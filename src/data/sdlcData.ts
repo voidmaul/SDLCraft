@@ -9,15 +9,21 @@ export interface SdlcCaseStudy {
   highlight: string;
 }
 
+export interface SdlcPhaseTheme {
+  accent: string;
+  bg: string;
+  border: string;
+  badge: string;
+  tag: string;
+}
+
 export interface SdlcPhase {
   id: string;
   number: number;
   name: string;
   nameId: string;
   icon: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
+  theme: SdlcPhaseTheme;
   objective: string;
   roles: { title: string; description: string }[];
   artifacts: SdlcArtifact;
@@ -32,9 +38,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Planning",
     nameId: "Perencanaan & Studi Kelayakan Bisnis",
     icon: "ClipboardList",
-    color: "text-violet-600",
-    bgColor: "bg-violet-50",
-    borderColor: "border-violet-300",
+    theme: {
+      accent: "text-violet-700",
+      bg: "bg-violet-50",
+      border: "border-violet-900",
+      badge: "bg-violet-100 text-violet-800",
+      tag: "bg-violet-900 text-violet-100",
+    },
     objective:
       "Mendefinisikan ruang lingkup proyek, menilai kelayakan teknis, operasional, dan finansial, serta membentuk fondasi manajemen proyek yang solid sebelum pengembangan dimulai.",
     roles: [
@@ -91,9 +101,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Analysis",
     nameId: "Analisis Kebutuhan Sistem & Pemodelan",
     icon: "Search",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-300",
+    theme: {
+      accent: "text-sky-700",
+      bg: "bg-sky-50",
+      border: "border-sky-900",
+      badge: "bg-sky-100 text-sky-800",
+      tag: "bg-sky-900 text-sky-100",
+    },
     objective:
       "Menggali, mendokumentasikan, dan memodelkan kebutuhan fungsional & non-fungsional sistem secara komprehensif melalui teknik elicitasi kebutuhan yang terstruktur.",
     roles: [
@@ -150,9 +164,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Design",
     nameId: "Perancangan UI/UX, Basis Data, & Arsitektur Sistem",
     icon: "Palette",
-    color: "text-cyan-600",
-    bgColor: "bg-cyan-50",
-    borderColor: "border-cyan-300",
+    theme: {
+      accent: "text-cyan-700",
+      bg: "bg-cyan-50",
+      border: "border-cyan-900",
+      badge: "bg-cyan-100 text-cyan-800",
+      tag: "bg-cyan-900 text-cyan-100",
+    },
     objective:
       "Merancang blueprint lengkap sistem meliputi arsitektur teknis, desain antarmuka pengguna (UI/UX), struktur basis data, dan spesifikasi integrasi komponen sebelum coding dimulai.",
     roles: [
@@ -210,9 +228,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Development",
     nameId: "Implementasi, Coding, & Version Control",
     icon: "Code2",
-    color: "text-green-600",
-    bgColor: "bg-green-50",
-    borderColor: "border-green-300",
+    theme: {
+      accent: "text-emerald-700",
+      bg: "bg-emerald-50",
+      border: "border-emerald-900",
+      badge: "bg-emerald-100 text-emerald-800",
+      tag: "bg-emerald-900 text-emerald-100",
+    },
     objective:
       "Mengimplementasikan seluruh rancangan menjadi kode program yang berfungsi menggunakan standar coding yang telah ditetapkan, dikelola dengan version control, dan diintegrasikan secara berkelanjutan.",
     roles: [
@@ -270,9 +292,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Testing",
     nameId: "Pengujian Blackbox, Whitebox, & UAT",
     icon: "TestTube2",
-    color: "text-yellow-600",
-    bgColor: "bg-yellow-50",
-    borderColor: "border-yellow-300",
+    theme: {
+      accent: "text-amber-700",
+      bg: "bg-amber-50",
+      border: "border-amber-900",
+      badge: "bg-amber-100 text-amber-800",
+      tag: "bg-amber-900 text-amber-100",
+    },
     objective:
       "Memastikan sistem bebas dari defect, memenuhi semua acceptance criteria dari SRS, dan diterima oleh pengguna akhir melalui serangkaian pengujian sistematis dan terstruktur.",
     roles: [
@@ -329,9 +355,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Deployment",
     nameId: "Rilis Produksi, Staging, & CI/CD Pipeline",
     icon: "Rocket",
-    color: "text-orange-600",
-    bgColor: "bg-orange-50",
-    borderColor: "border-orange-300",
+    theme: {
+      accent: "text-orange-700",
+      bg: "bg-orange-50",
+      border: "border-orange-900",
+      badge: "bg-orange-100 text-orange-800",
+      tag: "bg-orange-900 text-orange-100",
+    },
     objective:
       "Merilis sistem yang telah lulus pengujian ke lingkungan produksi secara aman, terkelola, dan terdokumentasi dengan baik, termasuk pelatihan pengguna dan pengalihan data legacy.",
     roles: [
@@ -388,9 +418,13 @@ export const sdlcPhases: SdlcPhase[] = [
     name: "Maintenance",
     nameId: "Pemeliharaan Sistem, Bug Patching, & Change Request",
     icon: "Wrench",
-    color: "text-red-600",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-300",
+    theme: {
+      accent: "text-rose-700",
+      bg: "bg-rose-50",
+      border: "border-rose-900",
+      badge: "bg-rose-100 text-rose-800",
+      tag: "bg-rose-900 text-rose-100",
+    },
     objective:
       "Memastikan sistem berjalan optimal pasca-rilis melalui pemantauan berkelanjutan, penanganan bug produksi, pengelolaan change request, dan perencanaan pengembangan versi berikutnya.",
     roles: [

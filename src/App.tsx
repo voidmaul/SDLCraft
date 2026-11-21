@@ -18,7 +18,9 @@ import {
 import SdlcRoadmap from "./components/SdlcRoadmap";
 import ModelComparison from "./components/ModelComparison";
 import QuizSection from "./components/QuizSection";
-import { createAudioContext, type AudioCtxRef } from "./utils/audio";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { AudioProvider } from "./context/AudioContext";
+import { useAudio } from "./hooks/useAudio";
 
 type NavSection = "roadmap" | "comparison" | "quiz";
 
@@ -28,15 +30,8 @@ const navItems: { id: NavSection; label: string; icon: React.ElementType }[] = [
   { id: "quiz", label: "Kuis Studi Kasus", icon: HelpCircle },
 ];
 
-// ─── Audio context shared across app ──────────────────────────────────────
-export const audioRef: AudioCtxRef = { ctx: null, muted: false };
-
-interface NavbarProps {
-  muted: boolean;
-  onToggleMute: () => void;
-}
-
-function Navbar({ muted, onToggleMute }: NavbarProps) {
+function Navbar() {
+  const { muted, toggleMute } = useAudio();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<NavSection>("roadmap");
@@ -44,25 +39,37 @@ function Navbar({ muted, onToggleMute }: NavbarProps) {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
-      const sections: NavSection[] = ["quiz", "comparison", "roadmap"];
-      for (const id of sections) {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 130) {
-          setActiveSection(id);
-          break;
-        }
-      }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id as NavSection);
+          }
+        });
+      },
+      {
+        rootMargin: "-20% 0px -60% 0px",
+      }
+    );
+
+    const sections: NavSection[] = ["roadmap", "comparison", "quiz"];
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
+    };
   }, []);
 
   const scrollTo = (id: NavSection) => {
     setMobileOpen(false);
-    // Let the menu close animation finish before scrolling
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 150);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -109,7 +116,7 @@ function Navbar({ muted, onToggleMute }: NavbarProps) {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={onToggleMute}
+            onClick={toggleMute}
             className="p-2 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
             title={muted ? "Aktifkan Audio" : "Matikan Audio"}
           >
@@ -316,35 +323,27 @@ function Footer() {
   );
 }
 
-export default function App() {
-  const [muted, setMuted] = useState(false);
-
-  const handleToggleMute = () => {
-    audioRef.muted = !muted;
-    setMuted(!muted);
-  };
-
-  // Initialize audio context on first interaction
-  useEffect(() => {
-    const init = () => {
-      if (!audioRef.ctx) {
-        audioRef.ctx = createAudioContext();
-      }
-    };
-    window.addEventListener("pointerdown", init, { once: true });
-    return () => window.removeEventListener("pointerdown", init);
-  }, []);
-
+function MainContent() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans antialiased">
-      <Navbar muted={muted} onToggleMute={handleToggleMute} />
+      <Navbar />
       <main>
         <HeroSection />
-        <SdlcRoadmap audioRef={audioRef} />
+        <SdlcRoadmap />
         <ModelComparison />
-        <QuizSection audioRef={audioRef} />
+        <QuizSection />
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <AudioProvider>
+        <MainContent />
+      </AudioProvider>
+    </ErrorBoundary>
   );
 }
