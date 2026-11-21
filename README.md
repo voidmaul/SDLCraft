@@ -14,6 +14,13 @@
 **Platform Edukasi Interaktif Siklus Rekayasa Perangkat Lunak Modern untuk Siapapun.**  
 *Eksplorasi visual 7 fase SDLC, simulator rekomendasi model, evaluasi pemahaman studi kasus, dan lencana kompetensi digital berformat Instagram Story.*
 
+<br />
+
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-sdlc--craft.vercel.app-FFC908?style=for-the-badge&logo=vercel&logoColor=000000&labelColor=0F172A)](https://sdlc-craft.vercel.app/)
+[![Deployment Status](https://img.shields.io/badge/Status-Online_%26_Active-10B981?style=for-the-badge&logo=vercel&logoColor=white)](https://sdlc-craft.vercel.app/)
+
+<br />
+
 ---
 
 [![React 18](https://img.shields.io/badge/React-18.2.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
@@ -23,6 +30,10 @@
 [![License](https://img.shields.io/badge/License-MIT-10B981?style=for-the-badge)](LICENSE)
 
 </div>
+
+> 🌐 **Coba Langsung Aplikasinya (Live Demo):**  
+> 👉 [**https://sdlc-craft.vercel.app**](https://sdlc-craft.vercel.app/)  
+> *Jelajahi roadmap 7 fase SDLC, mainkan simulator Waterfall vs Agile, dan selesaikan kuis studi kasus langsung di browser tanpa perlu instalasi lokal!*
 
 ---
 
@@ -245,6 +256,9 @@ SDLCraft/
 ---
 
 ## 🚀 Memulai Proyek (Getting Started)
+
+> 💡 **Mau coba langsung tanpa install apa-apa?**  
+> Buka versi live di browser: [**https://sdlc-craft.vercel.app**](https://sdlc-craft.vercel.app/)
 
 ### Prasyarat Sistem
 - **Node.js**: versi 18.x atau 20.x LTS direkomendasikan
