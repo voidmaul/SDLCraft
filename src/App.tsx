@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, lazy, Suspense } from "react";
+import { m, AnimatePresence, LazyMotion, domAnimation, MotionConfig } from "framer-motion";
 import {
   Layers,
   HelpCircle,
   Menu,
   X,
   GraduationCap,
-  ChevronDown,
   ArrowRight,
   BookOpen,
   Terminal,
@@ -14,13 +13,29 @@ import {
   Users,
   Volume2,
   VolumeX,
+  Loader2,
 } from "lucide-react";
 import SdlcRoadmap from "./components/SdlcRoadmap";
-import ModelComparison from "./components/ModelComparison";
-import QuizSection from "./components/QuizSection";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AudioProvider } from "./context/AudioContext";
 import { useAudio } from "./hooks/useAudio";
+
+// Section di bawah lipat layar dimuat secara lazy agar bundle awal ringan.
+const ModelComparison = lazy(() => import("./components/ModelComparison"));
+const QuizSection = lazy(() => import("./components/QuizSection"));
+
+function SectionFallback({ label }: { label: string }) {
+  return (
+    <div
+      className="py-20 px-4 flex flex-col items-center justify-center gap-3 min-h-[320px]"
+      role="status"
+      aria-label={`Memuat ${label}`}
+    >
+      <Loader2 className="w-6 h-6 text-slate-400 animate-spin" aria-hidden="true" />
+      <p className="text-xs font-bold text-slate-400 font-mono">Memuat {label}…</p>
+    </div>
+  );
+}
 
 type NavSection = "roadmap" | "comparison" | "quiz";
 
@@ -29,6 +44,10 @@ const navItems: { id: NavSection; label: string; icon: React.ElementType }[] = [
   { id: "comparison", label: "Waterfall vs Agile", icon: BookOpen },
   { id: "quiz", label: "Kuis Studi Kasus", icon: HelpCircle },
 ];
+
+const scrollToHero = () => {
+  document.getElementById("hero")?.scrollIntoView({ behavior: "smooth", block: "start" });
+};
 
 function Navbar() {
   const { muted, toggleMute } = useAudio();
@@ -56,14 +75,28 @@ function Navbar() {
     );
 
     const sections: NavSection[] = ["roadmap", "comparison", "quiz"];
-    sections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    const observed = new Set<string>();
+    const observeSections = () => {
+      sections.forEach((id) => {
+        if (observed.has(id)) return;
+        const el = document.getElementById(id);
+        if (el) {
+          observer.observe(el);
+          observed.add(id);
+        }
+      });
+    };
+    observeSections();
+
+    // Section comparison & quiz dimuat lazy; amati DOM agar section yang
+    // baru muncul tetap terdaftar di IntersectionObserver navigasi.
+    const mutationObserver = new MutationObserver(observeSections);
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       observer.disconnect();
+      mutationObserver.disconnect();
     };
   }, []);
 
@@ -82,7 +115,7 @@ function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={scrollToHero}>
           <div className="w-8 h-8 rounded-lg bg-brand-yellow flex items-center justify-center border-2 border-slate-900 shadow-neo-sm">
             <GraduationCap className="w-4 h-4 text-slate-900" strokeWidth={2.5} />
           </div>
@@ -113,7 +146,7 @@ function Navbar() {
 
         {/* Right controls */}
         <div className="flex items-center gap-2">
-          <motion.button
+          <m.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleMute}
@@ -122,7 +155,7 @@ function Navbar() {
             aria-label={muted ? "Aktifkan Audio" : "Matikan Audio"}
           >
             {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </motion.button>
+          </m.button>
           <button
             className="md:hidden p-2 rounded-lg border-2 border-slate-900 bg-white text-slate-700 hover:bg-brand-yellow hover:text-slate-900 transition-colors shadow-neo-sm"
             onClick={() => setMobileOpen((v) => !v)}
@@ -136,7 +169,7 @@ function Navbar() {
       {/* Mobile nav */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -155,7 +188,7 @@ function Navbar() {
                 {label}
               </button>
             ))}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </header>
@@ -174,7 +207,7 @@ function HeroSection() {
   ];
 
   return (
-    <section className="relative min-h-[92vh] flex flex-col items-center justify-center px-4 pt-28 pb-16 bg-slate-50 overflow-hidden">
+    <section id="hero" className="relative min-h-[92vh] flex flex-col items-center justify-center px-4 pt-28 pb-16 bg-slate-50 overflow-hidden">
       {/* Dot grid background - light neobrutalism pattern */}
       <div
         className="absolute inset-0 opacity-100 pointer-events-none"
@@ -186,7 +219,7 @@ function HeroSection() {
       {/* Top horizontal rule accent */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-brand-yellow border-b border-slate-900/10" />
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -196,7 +229,7 @@ function HeroSection() {
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-yellow border-2 border-slate-900 shadow-neo-sm mb-5">
           <Zap className="w-3.5 h-3.5 text-slate-900 fill-slate-900" />
           <span className="text-xs font-black text-slate-900 tracking-wide">
-            Eksplorasi Rekayasa Perangkat Lunak Jadi Lebih Menyenangkan
+            Eksplorasi Siklus Pengembangan Perangkat Lunak Jadi Lebih Menyenangkan
           </span>
         </div>
 
@@ -223,7 +256,7 @@ function HeroSection() {
         {/* Feature cards: 2 col on mobile, 4 col on sm+ */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full max-w-3xl mx-auto mb-9">
           {features.map(({ icon: Icon, label, sub }, i) => (
-            <motion.div
+            <m.div
               key={label}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -235,13 +268,13 @@ function HeroSection() {
               </div>
               <p className="text-slate-900 text-xs sm:text-sm font-black leading-snug">{label}</p>
               <p className="text-slate-500 text-[10px] sm:text-xs mt-1 leading-relaxed">{sub}</p>
-            </motion.div>
+            </m.div>
           ))}
         </div>
 
         {/* CTA: stack on mobile */}
         <div className="flex flex-col sm:flex-row gap-3.5 justify-center w-full sm:w-auto items-center">
-          <motion.button
+          <m.button
             whileHover={{ y: -2, boxShadow: "6px 6px 0px #0F172A" }}
             whileTap={{ y: 1 }}
             onClick={scrollToRoadmap}
@@ -249,8 +282,8 @@ function HeroSection() {
           >
             Mulai Jelajahi Alur
             <ArrowRight className="w-4 h-4" />
-          </motion.button>
-          <motion.button
+          </m.button>
+          <m.button
             whileHover={{ y: -2, boxShadow: "4px 4px 0px #0F172A" }}
             whileTap={{ y: 1 }}
             onClick={() => document.getElementById("quiz")?.scrollIntoView({ behavior: "smooth" })}
@@ -258,19 +291,10 @@ function HeroSection() {
           >
             Langsung Coba Kuis
             <HelpCircle className="w-4 h-4 text-slate-700" />
-          </motion.button>
+          </m.button>
         </div>
-      </motion.div>
+      </m.div>
 
-      {/* Scroll cue */}
-      <motion.div
-        className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
-        animate={{ y: [0, 6, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <span className="text-[10px] font-mono text-slate-400 font-bold">Scroll ke bawah</span>
-        <ChevronDown className="w-4 h-4 text-slate-500" />
-      </motion.div>
     </section>
   );
 }
@@ -281,13 +305,13 @@ function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-10">
           <div>
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-3 cursor-pointer" onClick={scrollToHero}>
               <div className="w-10 h-10 rounded-xl bg-brand-yellow border-2 border-slate-900 flex items-center justify-center shadow-neo-sm">
                 <GraduationCap className="w-5 h-5 text-slate-900" />
               </div>
               <div>
                 <p className="font-black text-slate-900 text-base tracking-tight">SDLCraft</p>
-                <p className="text-xs text-slate-500 font-mono">Belajar SDLC Interakti</p>
+                <p className="text-xs text-slate-500 font-mono">Belajar SDLC Interaktif</p>
               </div>
             </div>
             <p className="text-xs text-slate-600 max-w-sm leading-relaxed">
@@ -338,8 +362,12 @@ function MainContent() {
       <main>
         <HeroSection />
         <SdlcRoadmap />
-        <ModelComparison />
-        <QuizSection />
+        <Suspense fallback={<SectionFallback label="Waterfall vs Agile" />}>
+          <ModelComparison />
+        </Suspense>
+        <Suspense fallback={<SectionFallback label="Kuis Studi Kasus" />}>
+          <QuizSection />
+        </Suspense>
       </main>
       <Footer />
     </div>
@@ -349,9 +377,13 @@ function MainContent() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <AudioProvider>
-        <MainContent />
-      </AudioProvider>
+      <LazyMotion features={domAnimation} strict>
+        <MotionConfig reducedMotion="user">
+          <AudioProvider>
+            <MainContent />
+          </AudioProvider>
+        </MotionConfig>
+      </LazyMotion>
     </ErrorBoundary>
   );
 }

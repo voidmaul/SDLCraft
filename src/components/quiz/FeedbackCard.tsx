@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CheckCircle2, XCircle } from "lucide-react";
 import type { QuizQuestion } from "../../data/quizData";
 
@@ -10,7 +10,7 @@ interface FeedbackCardProps {
 
 export function FeedbackCard({ question, selectedOptionId, isCorrect }: FeedbackCardProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -42,6 +42,6 @@ export function FeedbackCard({ question, selectedOptionId, isCorrect }: Feedback
         )}
         <p className="text-sm text-slate-700 leading-relaxed">{question.explanation}</p>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

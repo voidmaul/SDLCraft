@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowDown, Shield } from "lucide-react";
 import { waterfallPhases } from "../../data/comparisonData";
 
@@ -9,7 +9,7 @@ export function WaterfallVisualization() {
         Aliran Linear Berurutan tanpa bisa melompat mundur sebelum selesai
       </p>
       {waterfallPhases.map((phase, i) => (
-        <motion.div
+        <m.div
           key={phase.name}
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -24,7 +24,7 @@ export function WaterfallVisualization() {
           {i < waterfallPhases.length - 1 && (
             <ArrowDown className="text-slate-400 flex-shrink-0 w-4 h-4" aria-hidden="true" />
           )}
-        </motion.div>
+        </m.div>
       ))}
       <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 rounded-xl p-3 border-2 border-slate-200">
         <Shield className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" aria-hidden="true" />

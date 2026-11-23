@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import { quizQuestions } from "../../data/quizData";
 import { OptionButton } from "./OptionButton";
@@ -27,7 +27,7 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
         // Jika data soal tidak ditemukan (mis. data berubah), lewati rekaman tersebut
         if (!q) return null;
         return (
-          <motion.div
+          <m.div
             key={record.questionId}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
                 isCorrect={record.isCorrect}
               />
             </div>
-          </motion.div>
+          </m.div>
         );
       })}
     </div>

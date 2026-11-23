@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   Trophy,
   RefreshCw,
@@ -9,31 +9,39 @@ import {
   Loader2,
   Calendar,
 } from "lucide-react";
-import confetti from "canvas-confetti";
 import { generateStoryBadge } from "../../utils/canvasBadge";
 import { getScoreBadge, type AnswerRecord } from "../../utils/scoreBadge";
 
-function launchConfetti() {
-  const duration = 3200;
-  const end = Date.now() + duration;
-  const frame = () => {
-    confetti({
-      particleCount: 4,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0 },
-      colors: ["#FFC908", "#0284C7", "#10B981"],
-    });
-    confetti({
-      particleCount: 4,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 },
-      colors: ["#FFC908", "#F97316", "#10B981"],
-    });
-    if (Date.now() < end) requestAnimationFrame(frame);
-  };
-  frame();
+// Confetti di-load secara dinamis hanya saat dibutuhkan (skor lulus),
+// sehingga tidak membebani bundle awal.
+async function launchConfetti() {
+  // Hormati preferensi pengguna yang meminimalkan animasi.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  try {
+    const { default: confetti } = await import("canvas-confetti");
+    const duration = 3200;
+    const end = Date.now() + duration;
+    const frame = () => {
+      confetti({
+        particleCount: 4,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ["#FFC908", "#0284C7", "#10B981"],
+      });
+      confetti({
+        particleCount: 4,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ["#FFC908", "#F97316", "#10B981"],
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+  } catch {
+    // Gagal memuat modul confetti: selebrasi dilewati tanpa mengganggu UI.
+  }
 }
 
 interface SummaryScreenProps {
@@ -58,7 +66,9 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
   });
 
   useEffect(() => {
-    if (score >= 70) setTimeout(launchConfetti, 300);
+    if (score < 70) return;
+    const timer = setTimeout(() => void launchConfetti(), 300);
+    return () => clearTimeout(timer);
   }, [score]);
 
   const handleDownloadBadge = () => {
@@ -71,7 +81,7 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35 }}
@@ -81,7 +91,7 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
         <div className="relative w-36 h-36 mb-4">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
             <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" strokeWidth="10" />
-            <motion.circle
+            <m.circle
               cx="60"
               cy="60"
               r="52"
@@ -96,14 +106,14 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <motion.span
+            <m.span
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6 }}
               className="text-4xl font-black text-slate-900"
             >
               {score}
-            </motion.span>
+            </m.span>
             <span className="text-xs text-slate-400 font-bold">/ 100</span>
           </div>
         </div>
@@ -113,7 +123,7 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
       </div>
 
       {/* Badge / Certificate card */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -160,7 +170,7 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
         ) : (
           <p className="text-xs text-slate-400 mt-3">Tetap semangat, terus eksplorasi dan coba lagi kapan saja!</p>
         )}
-      </motion.div>
+      </m.div>
 
       {/* Answer map */}
       <div className="mb-6">
@@ -184,7 +194,7 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
 
       {/* Action buttons */}
       <div className="flex flex-col sm:flex-row gap-3 flex-wrap justify-center">
-        <motion.button
+        <m.button
           whileHover={{ y: -2 }}
           whileTap={{ y: 1 }}
           onClick={onReview}
@@ -192,8 +202,8 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
         >
           <BookOpen className="w-4 h-4" />
           Review Pembahasan
-        </motion.button>
-        <motion.button
+        </m.button>
+        <m.button
           whileHover={{ y: -2 }}
           whileTap={{ y: 1 }}
           onClick={onRetry}
@@ -201,8 +211,8 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
         >
           <RefreshCw className="w-4 h-4" />
           Coba Kuis Lagi
-        </motion.button>
-        <motion.button
+        </m.button>
+        <m.button
           whileHover={{ y: -2 }}
           whileTap={{ y: 1 }}
           onClick={handleDownloadBadge}
@@ -218,8 +228,8 @@ export function SummaryScreen({ answers, userName, onReview, onRetry }: SummaryS
               <Download className="w-4 h-4" /> Unduh Badge IG Story (PNG)
             </>
           )}
-        </motion.button>
+        </m.button>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

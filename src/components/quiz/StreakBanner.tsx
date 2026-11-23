@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Flame } from "lucide-react";
 
 interface StreakBannerProps {
@@ -14,7 +14,7 @@ export function StreakBanner({ streak }: StreakBannerProps) {
       ? `${streak}x Streak! 🔥`
       : `${streak}x Combo! ⚡`;
   return (
-    <motion.div
+    <m.div
       key={streak}
       initial={{ opacity: 0, scale: 0.5, y: -20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -24,6 +24,6 @@ export function StreakBanner({ streak }: StreakBannerProps) {
     >
       <Flame className="w-4 h-4 text-orange-600" />
       <span className="text-xs font-black text-brand-dark uppercase tracking-wide">{label}</span>
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { RotateCcw, Zap } from "lucide-react";
 import { agileSprintCycle } from "../../data/comparisonData";
 
@@ -22,7 +22,7 @@ export function AgileVisualization() {
       >
         <title>Siklus Sprint Agile Scrum</title>
         {/* Dashed orbit ring */}
-        <motion.circle
+        <m.circle
           cx={AGILE_CX}
           cy={AGILE_CY}
           r={AGILE_R}
@@ -53,7 +53,7 @@ export function AgileVisualization() {
               width={pw}
               height={ph}
             >
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.12, type: "spring" }}
@@ -65,7 +65,7 @@ export function AgileVisualization() {
                     {ln}
                   </p>
                 ))}
-              </motion.div>
+              </m.div>
             </foreignObject>
           );
         })}

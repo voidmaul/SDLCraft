@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 interface OptionButtonProps {
@@ -40,7 +40,7 @@ export function OptionButton({
   }
 
   return (
-    <motion.button
+    <m.button
       whileHover={!answered ? { y: -1 } : {}}
       whileTap={!answered ? { y: 1 } : {}}
       onClick={!answered ? onClick : undefined}
@@ -55,6 +55,6 @@ export function OptionButton({
       </span>
       <span className="text-sm text-slate-700 leading-relaxed flex-1">{text}</span>
       {iconEl}
-    </motion.button>
+    </m.button>
   );
 }

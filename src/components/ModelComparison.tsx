@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Layers, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
 import { comparisonData } from "../data/comparisonData";
 import { WaterfallVisualization } from "./comparison/WaterfallVisualization";
@@ -13,7 +13,7 @@ export default function ModelComparison() {
     <section id="comparison" className="py-14 sm:py-20 px-4 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -29,14 +29,14 @@ export default function ModelComparison() {
           <p className="text-slate-500 max-w-md text-sm mt-2">
             Pahami kapan waktu yang pas untuk merekomendasikan masing-masing model kepada klien, atau gunakan Model Matcher untuk rekomendasi cepat.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Visualizations + Matcher: stack on mobile, side-by-side on lg */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8 sm:mb-10">
           {/* Visualizations col */}
           <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Waterfall card */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -66,10 +66,10 @@ export default function ModelComparison() {
               <div className="bg-white">
                 <WaterfallVisualization />
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Agile card */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: 16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -99,7 +99,7 @@ export default function ModelComparison() {
               <div className="bg-white">
                 <AgileVisualization />
               </div>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Model Matcher col */}
@@ -109,7 +109,7 @@ export default function ModelComparison() {
         </div>
 
         {/* Comparison table: horizontal scroll on mobile */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -129,7 +129,7 @@ export default function ModelComparison() {
               {comparisonData.map((row, i) => {
                 const RowIcon = row.icon;
                 return (
-                  <motion.div
+                  <m.div
                     key={row.criterion}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -159,12 +159,12 @@ export default function ModelComparison() {
                       )}
                       {row.agile.text}
                     </div>
-                  </motion.div>
+                  </m.div>
                 );
               })}
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

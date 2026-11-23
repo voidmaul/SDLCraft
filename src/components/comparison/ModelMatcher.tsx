@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   HelpCircle,
   ChevronRight,
@@ -10,13 +10,13 @@ import {
 import { matcherQuestions, calculateModelScore } from "../../data/comparisonData";
 
 export function ModelMatcher() {
-  const [answers, setAnswers] = useState<Record<string, "waterfall" | "agile" | "both">>({});
+  const [answers, setAnswers] = useState<Record<string, "waterfall" | "agile">>({});
   const [showResult, setShowResult] = useState(false);
 
   const totalQ = matcherQuestions.length;
   const answeredCount = Object.keys(answers).length;
 
-  const handleAnswer = (qId: string, val: "waterfall" | "agile" | "both") => {
+  const handleAnswer = (qId: string, val: "waterfall" | "agile") => {
     setAnswers((prev) => ({ ...prev, [qId]: val }));
   };
 
@@ -42,7 +42,7 @@ export function ModelMatcher() {
 
       {/* Progress bar */}
       <div className="h-1.5 bg-slate-200" role="progressbar" aria-valuenow={answeredCount} aria-valuemin={0} aria-valuemax={totalQ}>
-        <motion.div
+        <m.div
           className="h-full bg-brand-yellow"
           animate={{ width: `${(answeredCount / totalQ) * 100}%` }}
           transition={{ duration: 0.3 }}
@@ -61,7 +61,7 @@ export function ModelMatcher() {
               {q.options.map((opt) => {
                 const isSelected = answers[q.id] === opt.value;
                 return (
-                  <motion.button
+                  <m.button
                     key={opt.label}
                     whileHover={{ y: -1 }}
                     whileTap={{ y: 1 }}
@@ -81,7 +81,7 @@ export function ModelMatcher() {
                       aria-hidden="true"
                     />
                     {opt.label}
-                  </motion.button>
+                  </m.button>
                 );
               })}
             </div>
@@ -92,7 +92,7 @@ export function ModelMatcher() {
       {/* Action / Result */}
       <div className="px-5 pb-5">
         {!showResult ? (
-          <motion.button
+          <m.button
             whileHover={{ y: -2 }}
             whileTap={{ y: 1 }}
             disabled={answeredCount < totalQ}
@@ -105,10 +105,10 @@ export function ModelMatcher() {
               }`}
           >
             Lihat Rekomendasi Model →
-          </motion.button>
+          </m.button>
         ) : result ? (
           <AnimatePresence>
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className={`rounded-xl border-2 p-4 ${
@@ -147,7 +147,7 @@ export function ModelMatcher() {
               >
                 <RotateCcw className="w-3 h-3" aria-hidden="true" /> Ulangi Matcher
               </button>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         ) : null}
       </div>
