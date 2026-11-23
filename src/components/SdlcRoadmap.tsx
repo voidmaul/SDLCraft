@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   ClipboardList,
   Search,
@@ -45,7 +45,7 @@ function PhaseCard({ phase, index, isSelected, isLearned, onClick }: PhaseCardPr
   const colors = phase.theme;
 
   return (
-    <motion.button
+    <m.button
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07, duration: 0.35 }}
@@ -87,7 +87,7 @@ function PhaseCard({ phase, index, isSelected, isLearned, onClick }: PhaseCardPr
           Fase {phase.number}
         </p>
       </div>
-    </motion.button>
+    </m.button>
   );
 }
 
@@ -112,7 +112,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
   ];
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 16, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -145,7 +145,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
         {/* Bottom row: Tandai Paham button */}
         <div className="mt-2">
           {!isLearned ? (
-            <motion.button
+            <m.button
               whileHover={{ y: -1 }}
               whileTap={{ y: 1 }}
               onClick={onMarkLearned}
@@ -153,7 +153,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               Tandai Paham
-            </motion.button>
+            </m.button>
           ) : (
             <span className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-500 text-white border-2 border-emerald-700 w-full sm:w-auto justify-center sm:justify-start">
               <CheckCircle2 className="w-3.5 h-3.5" />
@@ -192,7 +192,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
 
       {/* Tab content */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={activeTab}
           role="tabpanel"
           id={`tabpanel-${activeTab}`}
@@ -207,7 +207,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
             <div className="space-y-5">
               <div>
                 <h4 className="text-xs font-black text-slate-700 mb-2 uppercase tracking-wider flex items-center gap-2">
-                  <span className={`w-1 h-4 rounded-full ${colors.tag.split(" ")[0]} inline-block`} />
+                  <span className={`w-1 h-4 rounded-full ${colors.solid} inline-block`} />
                   Tujuan Utama (Objective)
                 </h4>
                 <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 rounded-xl p-4 border-2 border-slate-200">
@@ -216,7 +216,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
               </div>
               <div>
                 <h4 className="text-xs font-black text-slate-700 mb-3 uppercase tracking-wider flex items-center gap-2">
-                  <span className={`w-1 h-4 rounded-full ${colors.tag.split(" ")[0]} inline-block`} />
+                  <span className={`w-1 h-4 rounded-full ${colors.solid} inline-block`} />
                   Aktivitas Kunci
                 </h4>
                 <ul className="space-y-2">
@@ -237,7 +237,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
                 Peran profesional yang terlibat aktif di fase ini:
               </p>
               {phase.roles.map((role, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -246,7 +246,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
                 >
                   <p className={`text-sm font-black ${colors.accent} mb-1`}>{role.title}</p>
                   <p className="text-sm text-slate-600 leading-relaxed">{role.description}</p>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           )}
@@ -269,7 +269,7 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
               </div>
               <div>
                 <h4 className={`text-xs font-black ${colors.accent} mb-3 uppercase tracking-wider flex items-center gap-2`}>
-                  <span className={`w-2 h-2 rounded-sm ${colors.tag.split(" ")[0]} inline-block`} />
+                  <span className={`w-2 h-2 rounded-sm ${colors.solid} inline-block`} />
                   Output Artefak
                 </h4>
                 <ul className="space-y-2">
@@ -303,9 +303,9 @@ function DetailPanel({ phase, isLearned, onClose, onMarkLearned }: DetailPanelPr
               </div>
             </div>
           )}
-        </motion.div>
+        </m.div>
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -347,7 +347,7 @@ export default function SdlcRoadmap() {
     <section id="roadmap" className="py-14 sm:py-20 px-4 bg-slate-50">
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -379,7 +379,7 @@ export default function SdlcRoadmap() {
                 </div>
               </div>
               <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-300">
-                <motion.div
+                <m.div
                   className="h-full bg-brand-yellow rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPct}%` }}
@@ -389,7 +389,7 @@ export default function SdlcRoadmap() {
               <p className="text-[10px] text-slate-400 mt-1 font-mono">{progressPct}% dipelajari</p>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Phase grid: 4 col on mobile, 7 col on lg */}
         <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-4 relative">
@@ -418,14 +418,14 @@ export default function SdlcRoadmap() {
         </AnimatePresence>
 
         {!selectedPhase && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
             className="text-center text-sm text-slate-400 mt-5 font-mono"
           >
             ☝️ Klik fase di atas untuk membuka detail
-          </motion.p>
+          </m.p>
         )}
       </div>
     </section>

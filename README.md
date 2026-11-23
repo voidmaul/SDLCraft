@@ -98,7 +98,7 @@ Jelajahi alur lengkap rekayasa perangkat lunak melalui visual pipeline 7 fase de
   - **Tujuan Utama (Objective)** fase.
   - **Peran Profesional Industri** yang bertanggung jawab (BA, SA, PO, QA, DevOps, DBA).
   - **Artefak Input & Output** standar industri (Project Charter, SRS, SDD, ERD, Test Scenario, Migration Script).
-  - **Studi Kasus Kontekstual** (SIMRS, E-Kampus, Fintech Payment Gateway, E-Commerce).
+  - **Studi Kasus Kontekstual** (SIMRS, E-Kampus, Marketplace UMKM, hingga Portal Layanan Publik).
 
 <details>
 <summary><b>🔍 Klik untuk Melihat Ringkasan 7 Fase SDLC</b></summary>
@@ -106,12 +106,12 @@ Jelajahi alur lengkap rekayasa perangkat lunak melalui visual pipeline 7 fase de
 | No | Fase | Output Kunci | Contoh Studi Kasus |
 |---|---|---|---|
 | 1 | **Planning** | Project Charter, Feasibility Study, WBS | SIMRS RSU Medika Nusantara |
-| 2 | **Analysis** | SRS, Use Case, Activity Diagram | Sistem Registrasi Mahasiswa (E-Kampus) |
-| 3 | **Design** | SDD, ERD, Arsitektur Microservices, Wireframe | E-Commerce Marketplace Flash Sale |
-| 4 | **Development** | Source Code, Unit Testing, CI/CD Pipeline | Core Banking API Gateway |
-| 5 | **Testing** | Test Matrix, Bug Reports, UAT Sign-off | Fintech Payment Integrator |
-| 6 | **Deployment** | Release Notes, Data Migration, Parity Staging | Sistem Logistik & Tracking Nasional |
-| 7 | **Maintenance** | Incident Log, Change Request, SLA Metric | Sistem Billing Listrik Pintar |
+| 2 | **Analysis** | SRS, Use Case, Activity Diagram | E-Kampus Universitas Digital Nusantara |
+| 3 | **Design** | SDD, ERD, Wireframe/Mockup | Marketplace UMKM Pasar Digital Lokal |
+| 4 | **Development** | Source Code, Unit Testing, CI/CD Pipeline | Presensi Digital Dinas Pendidikan Kota |
+| 5 | **Testing** | Test Case, Bug Reports, UAT Sign-off | Sistem Informasi Perpustakaan Universitas Regional |
+| 6 | **Deployment** | Release Notes, Data Migration, Parity Staging | Portal Layanan Publik Pemerintah Kabupaten |
+| 7 | **Maintenance** | Incident Log, Change Request, SLA Metric | Evaluasi SIMRS Enam Bulan Pasca Rilis |
 
 </details>
 
@@ -159,7 +159,9 @@ Bukan hanya tabel statis, fitur ini menyajikan dua mode komparasi:
 
 Fitur kuis dirancang khusus untuk mengasah kemampuan *problem-solving* di lingkungan industri:
 - **Input Nama Peserta**: Formulir nama di layar awal dengan validasi ketat, tersimpan otomatis di `localStorage` agar tidak hilang jika halaman disegarkan.
-- **10 Soal Berbasis Kasus Riil**: Mengangkat dilema nyata di industri (paritas database Staging vs Production, negosiasi scope creep, prioritisasi bug kritis saat rilis, audit kelayakan finansial).
+- **Progres Kuis Tersimpan Otomatis**: Refresh halaman di tengah kuis tidak mengulang dari nol; skor terbaikmu juga tercatat dan tampil di layar awal.
+- **Ramah Reduced Motion**: Animasi dan confetti otomatis diminimalkan mengikuti preferensi sistem pengguna.
+- **10 Soal Berbasis Kasus Riil**: Mengangkat dilema nyata di industri (paritas database Staging vs Production, negosiasi scope creep, prioritisasi bug kritis, audit kelayakan finansial).
 - **Instant Evaluasi Pemahaman (Real-Time Feedback)**:
   - ❌ **"Mengapa Opsi Ini Keliru"**: Membedah kesalahan logika dari opsi yang dipilih pengguna.
   - ✅ **"Pembahasan Jawaban Benar"**: Menguraikan dasar arsitektural dan praktik terbaik rekayasa perangkat lunak.
@@ -180,8 +182,8 @@ Pengguna dapat mendownload dan memamerkan pencapaian mereka ke media sosial mela
 - **Resolusi Asli HD 1080 x 1920 Piksel**: Dihasilkan menggunakan HTML5 Canvas 2D API murni tanpa dependensi library eksternal yang rentan merusak CSS layout.
 - **Komposisi Desain Story**:
   - Badge frame modern Yellow & Dark Tech.
-  - Medali heksagon beranimasi skor persentase.
-  - Nama pengguna terformat kapital tebal dengan auto-wrap otomatis.
+  - Medali heksagon dengan skor persentase.
+  - Nama pengguna terformat kapital tebal dengan auto-fit ukuran font otomatis.
   - Tanggal pencapaian resmi berformat lokal Indonesia.
   - **Kotak Tantangan Media Sosial**: Headline *"🔥 TANTANG TEMANMU! Aku berhasil menyelesaikan Studi Kasus SDLC. Bisakah kamu mengalahkan skorku?"*.
 
@@ -218,12 +220,13 @@ Platform ini dilengkapi sistem efek suara sintetis murni (tanpa memerlukan file 
 |---|---|---|
 | **Core UI Engine** | React 18.2 | Declarative component hierarchy & virtual DOM rendering |
 | **Type Safety** | TypeScript 5.2 | Strict interface contract untuk data SDLC, kuis, dan audio context |
-| **Styling Architecture** | Tailwind CSS 3.4 | Utility-first tokenisasi tema Hacktiv8 (`brand-yellow`, `brand-dark`, `shadow-neo`) |
+| **Styling Architecture** | Tailwind CSS 3.4 | Utility-first design tokens neobrutalism (`brand-yellow`, `brand-dark`, `shadow-neo`) |
 | **Animation Physics** | Framer Motion 11.0 | Micro-interactions, spring transitions, AnimatePresence transitions |
 | **Vector Icons** | Lucide React | Ikonografi SVG clean & scalable |
 | **Celebration FX** | Canvas-Confetti 1.9 | Particle emitter efek selebrasi kelulusan skor kuis |
 | **Social Card Export** | HTML5 Canvas 2D | Render canvas 1080x1920px untuk download instan PNG |
 | **Audio Synthesis** | Native Web Audio API | Zero-latency oscillator synthesizer (sine/sawtooth waves) |
+| **Unit Testing** | Vitest | Test logika bisnis (reducer kuis, badge skor, matcher) & smoke test render |
 
 ---
 
@@ -231,26 +234,31 @@ Platform ini dilengkapi sistem efek suara sintetis murni (tanpa memerlukan file 
 
 ```
 SDLCraft/
+├── .github/workflows/
+│   └── deploy.yml             # CI: lint → test → build → deploy GitHub Pages
 ├── public/
-│   └── favicon.svg              # Ikon topi wisuda emas khas SDLCraft
+│   └── favicon.png            # Ikon topi wisuda emas khas SDLCraft
 ├── src/
 │   ├── components/
-│   │   ├── ModelComparison.tsx  # Pipeline Waterfall, siklus Agile & Interactive Matcher
-│   │   ├── QuizSection.tsx      # Kuis 10 kasus, input nama, evaluasi, review, & IG Story
-│   │   └── SdlcRoadmap.tsx      # Visual 7 fase, stepper, checklist paham & tab detail
-│   ├── data/
-│   │   ├── quizData.ts          # Bank 10 studi kasus industri, opsi, & pembahasan
-│   │   └── sdlcData.ts          # Metadata 7 fase, peran profesional, & artefak
-│   ├── utils/
-│   │   └── audio.ts             # Web Audio API context, oscillator generator, & sfx
-│   ├── App.tsx                  # Navbar (audio toggle), Hero section, & Footer
-│   ├── main.tsx                 # Root bootstrap React DOM
-│   └── index.css                # Custom directives & high-contrast shadow tokens
-├── index.html                   # HTML entry point dengan metadata viewport
-├── package.json                 # Daftar dependensi & npm scripts
-├── tailwind.config.js           # Konfigurasi custom colors, fonts & box shadows
-├── tsconfig.json                # Pengaturan compiler TypeScript (strict mode)
-└── vite.config.ts               # Konfigurasi bundler Vite React
+│   │   ├── comparison/        # Visualisasi Waterfall, siklus Agile & Model Matcher
+│   │   ├── quiz/              # Sub-komponen kuis & quizReducer (state machine)
+│   │   ├── ModelComparison.tsx  # Section komparasi model & decision matcher
+│   │   ├── QuizSection.tsx      # Section kuis studi kasus & progres tersimpan
+│   │   ├── SdlcRoadmap.tsx      # Visual 7 fase, stepper, checklist paham & tab detail
+│   │   └── ErrorBoundary.tsx    # Penanganan error render global
+│   ├── context/               # AudioProvider (mute & SFX global)
+│   ├── hooks/                 # useAudio
+│   ├── data/                  # Konten 7 fase SDLC, 10 soal kuis & komparasi model
+│   ├── utils/                 # Audio synth, canvas badge & score badge + unit test
+│   ├── App.tsx                # Navbar, Hero, Footer & lazy-loaded sections
+│   ├── main.tsx               # Root bootstrap React DOM
+│   └── index.css              # Tailwind directives & base styles
+├── index.html                 # HTML entry point + meta OG/Twitter
+├── LICENSE                    # Lisensi MIT
+├── package.json               # Daftar dependensi & npm scripts
+├── tailwind.config.js         # Design tokens (warna brand & shadow neo)
+├── tsconfig.json              # Pengaturan compiler TypeScript (strict mode)
+└── vite.config.ts             # Konfigurasi Vite React + vendor chunk splitting
 ```
 
 ---
@@ -284,7 +292,19 @@ npm run dev
 
 Buka peramban di: **`http://localhost:5173`**
 
-### 3. Membangun untuk Lingkungan Produksi
+### 3. Menjalankan Lint & Unit Test
+
+```bash
+# Validasi kualitas kode (ESLint, 0 warning)
+npm run lint
+
+# Menjalankan unit test (Vitest)
+npm test
+```
+
+> 💡 Lint, test, dan build juga berjalan otomatis sebagai *quality gate* di GitHub Actions setiap push ke `main`.
+
+### 4. Membangun untuk Lingkungan Produksi
 
 ```bash
 # Validasi tipe data TypeScript & kompilasi aset statis
@@ -303,16 +323,16 @@ Output kompilasi produksi yang teroptimasi akan berada di direktori `dist/`.
 <details>
 <summary><b>📚 Klik untuk Melihat Skenario Masalah di Kuis Evaluasi</b></summary>
 
-1. **Fase Planning**: Studi Kelayakan & Project Charter saat menghadapi instruksi mulai coding sebelum analisa.
-2. **Fase Planning**: Negosiasi ruang lingkup (Scope Management) untuk integrasi 5 vendor pihak ketiga secara mendadak.
-3. **Fase Analysis**: Pemilihan teknik requirement gathering ketika stakeholder sibuk dan berlokasi di 5 zona waktu.
-4. **Fase Analysis**: Validasi proses bisnis checkout e-commerce menggunakan Activity Diagram & Business Process Model.
-5. **Fase Design**: Normalisasi database (3NF) vs denormalisasi demi performa sistem transaksi tinggi.
-6. **Fase Design**: Pemilihan pola arsitektur Microservices vs Modular Monolith untuk startup tahap awal.
-7. **Fase Development**: Strategi Code Review & branch protection policy saat mengejar deadline rilis ketat.
-8. **Fase Testing**: Bug triage saat menemukan *severity high / priority low* mendekati tanggal go-live.
-9. **Fase Deployment**: Penanganan disparitas database Staging (PostgreSQL 15) vs Production (PostgreSQL 13).
-10. **Fase Maintenance**: Manajemen insiden & rollback plan saat server produksi mengalami lonjakan error 500.
+1. **Fase Planning**: Project Charter & Studi Kelayakan saat manajemen meminta langsung mulai coding.
+2. **Fase Planning**: Komponen studi kelayakan finansial (ROI & payback period) untuk menjawab pertanyaan CFO.
+3. **Fase Analysis**: Resolusi konflik kebutuhan antar stakeholder pada sistem informasi klinik.
+4. **Fase Analysis**: Scope creep integrasi 5 vendor mendadak → mekanisme Change Request formal.
+5. **Fase Design**: Normalisasi database (2NF/3NF) untuk tabel transaksi e-commerce yang redundan.
+6. **Fase Testing**: Change Request fitur payment gateway baru di tengah proyek Waterfall yang hampir selesai.
+7. **Fase Testing**: Bug triage 15 temuan (kritis/mayor/minor) dengan matriks severity-priority.
+8. **Fase Deployment**: Paritas environment Staging (PostgreSQL 15) vs Production (PostgreSQL 13).
+9. **Fase Maintenance**: Degradasi performa laporan HRD (3 → 45 menit) seiring pertumbuhan data.
+10. **Fase Planning**: Pemilihan model SDLC untuk startup fintech dengan regulasi dinamis & target demo cepat.
 
 </details>
 

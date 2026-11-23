@@ -13,7 +13,9 @@ export interface SdlcPhaseTheme {
   accent: string;
   bg: string;
   border: string;
-  badge: string;
+  // Warna solid (bg-*-900) untuk elemen aksen kecil; sebelumnya diturunkan
+  // rapuh via tag.split(" ")[0] di komponen.
+  solid: string;
   tag: string;
 }
 
@@ -42,7 +44,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-violet-700",
       bg: "bg-violet-50",
       border: "border-violet-900",
-      badge: "bg-violet-100 text-violet-800",
+      solid: "bg-violet-900",
       tag: "bg-violet-900 text-violet-100",
     },
     objective:
@@ -105,7 +107,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-sky-700",
       bg: "bg-sky-50",
       border: "border-sky-900",
-      badge: "bg-sky-100 text-sky-800",
+      solid: "bg-sky-900",
       tag: "bg-sky-900 text-sky-100",
     },
     objective:
@@ -168,7 +170,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-cyan-700",
       bg: "bg-cyan-50",
       border: "border-cyan-900",
-      badge: "bg-cyan-100 text-cyan-800",
+      solid: "bg-cyan-900",
       tag: "bg-cyan-900 text-cyan-100",
     },
     objective:
@@ -232,7 +234,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-emerald-700",
       bg: "bg-emerald-50",
       border: "border-emerald-900",
-      badge: "bg-emerald-100 text-emerald-800",
+      solid: "bg-emerald-900",
       tag: "bg-emerald-900 text-emerald-100",
     },
     objective:
@@ -296,7 +298,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-amber-700",
       bg: "bg-amber-50",
       border: "border-amber-900",
-      badge: "bg-amber-100 text-amber-800",
+      solid: "bg-amber-900",
       tag: "bg-amber-900 text-amber-100",
     },
     objective:
@@ -359,7 +361,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-orange-700",
       bg: "bg-orange-50",
       border: "border-orange-900",
-      badge: "bg-orange-100 text-orange-800",
+      solid: "bg-orange-900",
       tag: "bg-orange-900 text-orange-100",
     },
     objective:
@@ -422,7 +424,7 @@ export const sdlcPhases: SdlcPhase[] = [
       accent: "text-rose-700",
       bg: "bg-rose-50",
       border: "border-rose-900",
-      badge: "bg-rose-100 text-rose-800",
+      solid: "bg-rose-900",
       tag: "bg-rose-900 text-rose-100",
     },
     objective:

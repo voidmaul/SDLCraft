@@ -1,4 +1,4 @@
-import React from "react";
+import type { ElementType } from "react";
 import {
   RefreshCw,
   Users,
@@ -28,21 +28,20 @@ export const waterfallPhases: WaterfallPhaseItem[] = [
 export interface AgileSprintItem {
   name: string;
   color: string;
-  angle: number;
 }
 
 export const agileSprintCycle: AgileSprintItem[] = [
-  { name: "Sprint\nPlanning", color: "bg-indigo-600 border-indigo-900", angle: 0 },
-  { name: "Daily\nScrum", color: "bg-blue-600 border-blue-900", angle: 60 },
-  { name: "Sprint\nReview", color: "bg-cyan-600 border-cyan-900", angle: 120 },
-  { name: "Retro-\nspective", color: "bg-teal-600 border-teal-900", angle: 180 },
-  { name: "Backlog\nRefine", color: "bg-green-600 border-green-900", angle: 240 },
-  { name: "Sprint\nExecute", color: "bg-emerald-600 border-emerald-900", angle: 300 },
+  { name: "Sprint\nPlanning", color: "bg-indigo-600 border-indigo-900" },
+  { name: "Daily\nScrum", color: "bg-blue-600 border-blue-900" },
+  { name: "Sprint\nReview", color: "bg-cyan-600 border-cyan-900" },
+  { name: "Retro-\nspective", color: "bg-teal-600 border-teal-900" },
+  { name: "Backlog\nRefine", color: "bg-green-600 border-green-900" },
+  { name: "Sprint\nExecute", color: "bg-emerald-600 border-emerald-900" },
 ];
 
 export interface ComparisonRow {
   criterion: string;
-  icon: React.ElementType;
+  icon: ElementType;
   waterfall: { text: string; positive: boolean };
   agile: { text: string; positive: boolean };
 }
@@ -101,7 +100,7 @@ export const comparisonData: ComparisonRow[] = [
 export interface MatcherQuestion {
   id: string;
   question: string;
-  options: { label: string; value: "waterfall" | "agile" | "both" }[];
+  options: { label: string; value: "waterfall" | "agile" }[];
 }
 
 export const matcherQuestions: MatcherQuestion[] = [
@@ -148,7 +147,7 @@ export const matcherQuestions: MatcherQuestion[] = [
 ];
 
 export function calculateModelScore(
-  answers: Record<string, "waterfall" | "agile" | "both">,
+  answers: Record<string, "waterfall" | "agile">,
   totalQuestions: number
 ): { model: "waterfall" | "agile"; score: number } {
   let waterfall = 0;
@@ -156,10 +155,6 @@ export function calculateModelScore(
   Object.values(answers).forEach((v) => {
     if (v === "waterfall") waterfall++;
     if (v === "agile") agile++;
-    if (v === "both") {
-      waterfall++;
-      agile++;
-    }
   });
 
   return waterfall >= agile
