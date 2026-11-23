@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useReducer } from "react";
+import { m, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
   ChevronRight,
@@ -15,19 +15,43 @@ import { FeedbackCard } from "./quiz/FeedbackCard";
 import { StreakBanner } from "./quiz/StreakBanner";
 import { SummaryScreen } from "./quiz/SummaryScreen";
 import { ReviewScreen } from "./quiz/ReviewScreen";
-import type { AnswerRecord } from "../utils/scoreBadge";
+import {
+  quizReducer,
+  initialQuizState,
+  restoreQuizSession,
+} from "./quiz/quizReducer";
 
-type QuizState = "idle" | "active" | "review" | "summary";
+const SESSION_KEY = "sdlc_quiz_session";
+const BEST_SCORE_KEY = "sdlc_best_score";
+
+function loadBestScore(): number | null {
+  try {
+    const raw = localStorage.getItem(BEST_SCORE_KEY);
+    if (raw === null) return null;
+    const value = Number(raw);
+    return Number.isInteger(value) && value >= 0 && value <= 100 ? value : null;
+  } catch {
+    return null;
+  }
+}
 
 export default function QuizSection() {
   const { playPop, playCorrect, playWrong, playStreak } = useAudio();
-  const [quizState, setQuizState] = useState<QuizState>("idle");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [answered, setAnswered] = useState(false);
-  const [answers, setAnswers] = useState<AnswerRecord[]>([]);
-  const [streak, setStreak] = useState(0);
-  const streakRef = useRef(0);
+
+  // Seluruh state kuis dikelola reducer murni; sesi dipulihkan dari
+  // localStorage agar refresh halaman tidak menghilangkan progres.
+  const [state, dispatch] = useReducer(quizReducer, null, () => {
+    let raw: string | null = null;
+    try {
+      raw = localStorage.getItem(SESSION_KEY);
+    } catch {
+      // ignore storage errors
+    }
+    return restoreQuizSession(raw, quizQuestions) ?? initialQuizState;
+  });
+  const { quizState, currentIndex, selectedOption, answered, answers, streak } = state;
+
+  const [bestScore, setBestScore] = useState<number | null>(loadBestScore);
 
   // userName: persisted in localStorage
   const [userName, setUserName] = useState<string>(() => {
@@ -57,69 +81,71 @@ export default function QuizSection() {
       ? ((currentIndex + (answered ? 1 : 0)) / totalQuestions) * 100
       : 0;
 
+  // Persist sesi kuis setiap kali state berubah (idle = bersihkan sesi).
+  useEffect(() => {
+    try {
+      if (quizState === "idle") {
+        localStorage.removeItem(SESSION_KEY);
+      } else {
+        localStorage.setItem(SESSION_KEY, JSON.stringify(state));
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [state, quizState]);
+
+  // Simpan skor terbaik saat mencapai layar hasil.
+  useEffect(() => {
+    if (quizState !== "summary" || answers.length === 0) return;
+    const correct = answers.filter((a) => a.isCorrect).length;
+    const score = Math.round((correct / answers.length) * 100);
+    const nextBest = bestScore === null ? score : Math.max(bestScore, score);
+    if (nextBest !== bestScore) {
+      setBestScore(nextBest);
+      try {
+        localStorage.setItem(BEST_SCORE_KEY, String(nextBest));
+      } catch {
+        // ignore storage errors
+      }
+    }
+  }, [quizState, answers, bestScore]);
+
   const handleStart = () => {
     if (!isNameValid) return;
-    setQuizState("active");
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setAnswered(false);
-    setAnswers([]);
-    setStreak(0);
-    streakRef.current = 0;
+    dispatch({ type: "START" });
   };
 
   const handleSelectOption = (optionId: string) => {
     if (answered) return;
-    setSelectedOption(optionId);
+    dispatch({ type: "SELECT", optionId });
     playPop();
   };
 
-  const handleSubmit = useCallback(() => {
-    if (!selectedOption || answered) return;
+  const handleSubmit = () => {
+    if (!selectedOption || answered || !currentQuestion) return;
     const isCorrect = selectedOption === currentQuestion.correctOptionId;
     if (isCorrect) {
-      streakRef.current += 1;
-      setStreak(streakRef.current);
       playCorrect();
-      if (streakRef.current >= 3) playStreak();
+      if (streak + 1 >= 3) playStreak();
     } else {
-      streakRef.current = 0;
-      setStreak(0);
       playWrong();
     }
-    setAnswered(true);
-    setAnswers((prev) => [
-      ...prev,
-      { questionId: currentQuestion.id, selectedOptionId: selectedOption, isCorrect },
-    ]);
-  }, [selectedOption, answered, currentQuestion, playCorrect, playStreak, playWrong]);
-
-  const handleNext = () => {
-    if (currentIndex < totalQuestions - 1) {
-      setCurrentIndex((prev) => prev + 1);
-      setSelectedOption(null);
-      setAnswered(false);
-    } else {
-      setQuizState("summary");
-    }
+    dispatch({
+      type: "SUBMIT",
+      questionId: currentQuestion.id,
+      correctOptionId: currentQuestion.correctOptionId,
+    });
   };
 
-  const handleReview = () => setQuizState("review");
-  const handleRetry = () => {
-    setQuizState("idle");
-    setAnswers([]);
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setAnswered(false);
-    setStreak(0);
-    streakRef.current = 0;
-  };
+  const handleNext = () => dispatch({ type: "NEXT", totalQuestions });
+  const handleReview = () => dispatch({ type: "REVIEW" });
+  const handleRetry = () => dispatch({ type: "RETRY" });
 
   return (
     <section id="quiz" className="py-14 sm:py-20 px-4 bg-slate-50">
       <div className="max-w-3xl mx-auto">
         {/* Section header */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -136,13 +162,13 @@ export default function QuizSection() {
             Tersedia <strong>{totalQuestions} soal seru berbasis skenario nyata</strong> dan bukan sekadar hafalan teori.
             Raih lencana kompetensimu dan unduh badge IG Story!
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Quiz container */}
         <div className="bg-white rounded-2xl border-2 border-slate-900 shadow-neo overflow-hidden">
           {/* ── IDLE ── */}
           {quizState === "idle" && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="p-5 sm:p-8 md:p-10 text-center"
@@ -169,6 +195,16 @@ export default function QuizSection() {
                   </div>
                 ))}
               </div>
+
+              {/* Best score pribadi (muncul setelah pernah menyelesaikan kuis) */}
+              {bestScore !== null && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border-2 border-emerald-900 shadow-neo-green mb-6">
+                  <Trophy className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+                  <span className="text-xs font-black text-emerald-700">
+                    Skor terbaikmu: {bestScore}%
+                  </span>
+                </div>
+              )}
 
               {/* Badge tier info */}
               <div className="text-left bg-brand-yellow/10 rounded-xl border-2 border-brand-dark p-3 sm:p-4 mb-5 sm:mb-7 max-w-sm mx-auto">
@@ -214,7 +250,7 @@ export default function QuizSection() {
                 </div>
                 <AnimatePresence>
                   {userName.length > 0 && !isNameValid && (
-                    <motion.p
+                    <m.p
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
@@ -222,10 +258,10 @@ export default function QuizSection() {
                     >
                       <AlertCircle className="w-3 h-3" />
                       Nama minimal 2 karakter ya!
-                    </motion.p>
+                    </m.p>
                   )}
                   {isNameValid && (
-                    <motion.p
+                    <m.p
                       initial={{ opacity: 0, y: -4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
@@ -233,13 +269,13 @@ export default function QuizSection() {
                     >
                       <CheckCircle2 className="w-3 h-3" />
                       Siap! Badge akan dicetak atas nama <strong>{userName.trim()}</strong>.
-                    </motion.p>
+                    </m.p>
                   )}
                 </AnimatePresence>
               </div>
 
               {/* Start button: full width on mobile */}
-              <motion.button
+              <m.button
                 whileHover={isNameValid ? { y: -2, boxShadow: "6px 6px 0px #FFC908" } : {}}
                 whileTap={isNameValid ? { y: 1 } : {}}
                 onClick={handleStart}
@@ -253,8 +289,8 @@ export default function QuizSection() {
               >
                 Mulai Kuis Sekarang
                 <ArrowRight className="w-5 h-5" />
-              </motion.button>
-            </motion.div>
+              </m.button>
+            </m.div>
           )}
 
           {/* ── ACTIVE ── */}
@@ -277,7 +313,7 @@ export default function QuizSection() {
                   </span>
                 </div>
                 <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-300">
-                  <motion.div
+                  <m.div
                     className="h-full bg-brand-yellow rounded-full"
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.4 }}
@@ -287,7 +323,7 @@ export default function QuizSection() {
 
               {/* Question content */}
               <AnimatePresence mode="wait">
-                <motion.div
+                <m.div
                   key={currentIndex}
                   initial={{ opacity: 0, x: 24 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -332,7 +368,7 @@ export default function QuizSection() {
 
                   <div className="mt-5 flex justify-end">
                     {!answered ? (
-                      <motion.button
+                      <m.button
                         whileHover={{ y: -1 }}
                         whileTap={{ y: 1 }}
                         onClick={handleSubmit}
@@ -346,9 +382,9 @@ export default function QuizSection() {
                       >
                         Konfirmasi Jawaban
                         <CheckCircle2 className="w-4 h-4" />
-                      </motion.button>
+                      </m.button>
                     ) : (
-                      <motion.button
+                      <m.button
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         whileHover={{ y: -1 }}
@@ -365,10 +401,10 @@ export default function QuizSection() {
                             Lihat Hasil <Trophy className="w-4 h-4" />
                           </>
                         )}
-                      </motion.button>
+                      </m.button>
                     )}
                   </div>
-                </motion.div>
+                </m.div>
               </AnimatePresence>
             </div>
           )}
