@@ -35,7 +35,7 @@ export const agileSprintCycle: AgileSprintItem[] = [
   { name: "Daily\nScrum", color: "bg-blue-600 border-blue-900" },
   { name: "Sprint\nReview", color: "bg-cyan-600 border-cyan-900" },
   { name: "Retro-\nspective", color: "bg-teal-600 border-teal-900" },
-  { name: "Backlog\nRefine", color: "bg-green-600 border-green-900" },
+  { name: "Product\nBacklog", color: "bg-green-600 border-green-900" },
   { name: "Sprint\nExecute", color: "bg-emerald-600 border-emerald-900" },
 ];
 
@@ -69,13 +69,13 @@ export const comparisonData: ComparisonRow[] = [
     criterion: "Waktu ke Produk Pertama",
     icon: Clock,
     waterfall: { text: "Lama; produk baru tersedia di akhir proyek", positive: false },
-    agile: { text: "Cepat; ada hasil fungsional tiap dua sampai empat minggu", positive: true },
+    agile: { text: "Cepat; ada hasil fungsional tiap 2–4 minggu", positive: true },
   },
   {
     criterion: "Dokumentasi",
     icon: Layers,
     waterfall: { text: "Sangat lengkap & terstruktur; ideal untuk audit", positive: true },
-    agile: { text: "Lebih minimal; fokus pada working software", positive: false },
+    agile: { text: "Just-in-time; dapat memenuhi audit bila DoD disepakati", positive: true },
   },
   {
     criterion: "Prediktabilitas Biaya",
@@ -97,16 +97,29 @@ export const comparisonData: ComparisonRow[] = [
   },
 ];
 
+export const modelNotes: { waterfall: string; agile: string } = {
+  waterfall:
+    "Waterfall cocok ketika kebutuhan stabil, kontrak fixed, dan dokumentasi lengkap dibutuhkan sejak awal. Setiap fase ditutup dengan sign-off sebelum fase berikutnya dimulai.",
+  agile:
+    "Agile Scrum cocok ketika kebutuhan berkembang, klien aktif, dan tim kecil. Sprint 2–4 minggu menghasilkan increment; kepatuhan audit dijaga lewat Definition of Done dan dokumentasi yang disepakati.",
+};
+
 export interface MatcherQuestion {
   id: string;
+  /** Label singkat kriteria untuk ringkasan kontribusi. */
+  label: string;
   question: string;
+  /** Bobot kriteria 1–3 terhadap keputusan model. */
+  weight: number;
   options: { label: string; value: "waterfall" | "agile" }[];
 }
 
 export const matcherQuestions: MatcherQuestion[] = [
   {
     id: "requirements",
+    label: "Stabilitas kebutuhan",
     question: "Seberapa jelas & stabil kebutuhan proyek?",
+    weight: 3,
     options: [
       { label: "Sangat jelas & tidak akan berubah", value: "waterfall" },
       { label: "Masih berkembang & berpotensi berubah", value: "agile" },
@@ -114,7 +127,9 @@ export const matcherQuestions: MatcherQuestion[] = [
   },
   {
     id: "timeline",
+    label: "Kesiapan demo cepat",
     question: "Apakah klien butuh demo/prototype cepat?",
+    weight: 2,
     options: [
       { label: "Ya, perlu hasil nyata dalam 1 atau 2 bulan", value: "agile" },
       { label: "Tidak, klien bisa menunggu produk final", value: "waterfall" },
@@ -122,7 +137,9 @@ export const matcherQuestions: MatcherQuestion[] = [
   },
   {
     id: "client",
+    label: "Keterlibatan klien",
     question: "Seberapa aktif klien bisa terlibat?",
+    weight: 1,
     options: [
       { label: "Aktif, siap review setiap sprint", value: "agile" },
       { label: "Minim, hanya di awal dan akhir proyek", value: "waterfall" },
@@ -130,15 +147,19 @@ export const matcherQuestions: MatcherQuestion[] = [
   },
   {
     id: "compliance",
-    question: "Apakah ada regulasi ketat yang menuntut dokumentasi lengkap?",
+    label: "Regulasi & dokumentasi",
+    question: "Bagaimana pola perubahan dan kesiapan dokumentasi tim?",
+    weight: 3,
     options: [
-      { label: "Ya (misalnya: sistem keuangan, pemerintahan)", value: "waterfall" },
-      { label: "Tidak, fleksibilitas lebih diutamakan", value: "agile" },
+      { label: "Perubahan jarang & kontrak fixed → waterfall", value: "waterfall" },
+      { label: "Kebutuhan berubah & tim menjaga DoD terdokumentasi → agile", value: "agile" },
     ],
   },
   {
     id: "team",
+    label: "Ukuran & pengalaman tim",
     question: "Bagaimana ukuran & pengalaman tim?",
+    weight: 1,
     options: [
       { label: "Tim kecil (< 10 orang), siap self-organize", value: "agile" },
       { label: "Tim besar dengan peran spesialis tersegmentasi", value: "waterfall" },
@@ -146,18 +167,60 @@ export const matcherQuestions: MatcherQuestion[] = [
   },
 ];
 
+export interface MatcherContribution {
+  id: string;
+  label: string;
+  choice: string;
+  weight: number;
+  supports: "waterfall" | "agile";
+}
+
+export interface ModelScoreResult {
+  model: "waterfall" | "agile" | "hybrid";
+  /** Bobot kriteria pendukung model terdepan / total bobot * 100. */
+  score: number;
+  /** |bobot waterfall - bobot agile| / total bobot (0–1). */
+  margin: number;
+  contributions: MatcherContribution[];
+}
+
 export function calculateModelScore(
-  answers: Record<string, "waterfall" | "agile">,
-  totalQuestions: number
-): { model: "waterfall" | "agile"; score: number } {
+  answers: Record<string, "waterfall" | "agile">
+): ModelScoreResult {
   let waterfall = 0;
   let agile = 0;
-  Object.values(answers).forEach((v) => {
-    if (v === "waterfall") waterfall++;
-    if (v === "agile") agile++;
-  });
+  let totalWeight = 0;
+  const contributions: MatcherContribution[] = [];
 
-  return waterfall >= agile
-    ? { model: "waterfall", score: Math.round((waterfall / totalQuestions) * 100) }
-    : { model: "agile", score: Math.round((agile / totalQuestions) * 100) };
+  // Iterasi bank pertanyaan (bukan Object.values) agar kunci asing diabaikan
+  // dan bobot setiap kriteria selalu konsisten.
+  for (const question of matcherQuestions) {
+    totalWeight += question.weight;
+    const answer = answers[question.id];
+    if (answer !== "waterfall" && answer !== "agile") continue;
+
+    const option = question.options.find((item) => item.value === answer);
+    if (!option) continue;
+
+    if (answer === "waterfall") waterfall += question.weight;
+    else agile += question.weight;
+
+    contributions.push({
+      id: question.id,
+      label: question.label,
+      choice: option.label,
+      weight: question.weight,
+      supports: answer,
+    });
+  }
+
+  const difference = Math.abs(waterfall - agile);
+  const margin = totalWeight > 0 ? difference / totalWeight : 0;
+  const support = Math.max(waterfall, agile);
+  const score = totalWeight > 0 ? Math.round((support / totalWeight) * 100) : 0;
+
+  const model: ModelScoreResult["model"] =
+    margin < 0.2 ? "hybrid" : waterfall >= agile ? "waterfall" : "agile";
+
+  return { model, score, margin, contributions };
 }

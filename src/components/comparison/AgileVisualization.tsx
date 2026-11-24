@@ -8,9 +8,9 @@ const AGILE_R = 95;
 
 export function AgileVisualization() {
   return (
-    <div className="p-4" aria-label="Visualisasi Model Agile Scrum">
-      <p className="text-[10px] text-center text-slate-500 mb-3 font-black uppercase tracking-widest">
-        Siklus Sprint Berkala yang terus berulang hingga kebutuhan terpenuhi
+    <div className="p-4">
+      <p className="text-[11px] text-center text-slate-600 mb-3 font-black uppercase tracking-widest">
+        Siklus Sprint 2–4 minggu yang terus berulang hingga kebutuhan terpenuhi
       </p>
 
       <svg
@@ -18,7 +18,7 @@ export function AgileVisualization() {
         className="w-full max-w-[260px] mx-auto block"
         style={{ overflow: "visible" }}
         role="img"
-        aria-label="Diagram siklus sprint berputar yang mencakup Planning, Daily Scrum, Review, Retrospective, Refinement, dan Execution"
+        aria-label="Diagram siklus sprint berputar yang mencakup Planning, Daily Scrum, Review, Retrospective, Product Backlog, dan Execution"
       >
         <title>Siklus Sprint Agile Scrum</title>
         {/* Dashed orbit ring */}
@@ -79,10 +79,13 @@ export function AgileVisualization() {
         </foreignObject>
       </svg>
 
-      <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 rounded-xl p-3 border-2 border-slate-200">
+      <div className="mt-3 flex items-center gap-2 text-xs text-slate-600 bg-slate-50 rounded-xl p-3 border-2 border-slate-200">
         <Zap className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" aria-hidden="true" />
-        Setiap sprint dua sampai empat minggu menghasilkan fitur siap pakai yang dapat langsung diuji coba
+        Setiap sprint 2–4 minggu menghasilkan fitur siap pakai yang dapat langsung diuji coba
       </div>
+      <p className="mt-2 text-[11px] text-slate-600 leading-relaxed">
+        Product Backlog di-refine secara berkelanjutan; refinement bukan event sprint resmi.
+      </p>
     </div>
   );
 }

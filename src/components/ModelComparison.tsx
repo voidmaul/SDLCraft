@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { m } from "framer-motion";
 import { Layers, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
-import { comparisonData } from "../data/comparisonData";
+import { comparisonData, modelNotes } from "../data/comparisonData";
 import { WaterfallVisualization } from "./comparison/WaterfallVisualization";
 import { AgileVisualization } from "./comparison/AgileVisualization";
 import { ModelMatcher } from "./comparison/ModelMatcher";
@@ -36,12 +36,15 @@ export default function ModelComparison() {
           {/* Visualizations col */}
           <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Waterfall card */}
-            <m.div
+            <m.button
+              type="button"
               initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               onClick={() => setActiveModel("waterfall")}
-              className={`rounded-2xl border-2 cursor-pointer transition-all duration-150 overflow-hidden
+              aria-label="Tampilkan penjelasan model Waterfall"
+              aria-pressed={activeModel === "waterfall"}
+              className={`w-full flex flex-col text-left rounded-2xl border-2 cursor-pointer transition-all duration-150 overflow-hidden
                 ${
                   activeModel === "waterfall"
                     ? "border-blue-900 shadow-neo-blue"
@@ -66,15 +69,18 @@ export default function ModelComparison() {
               <div className="bg-white">
                 <WaterfallVisualization />
               </div>
-            </m.div>
+            </m.button>
 
             {/* Agile card */}
-            <m.div
+            <m.button
+              type="button"
               initial={{ opacity: 0, x: 16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               onClick={() => setActiveModel("agile")}
-              className={`rounded-2xl border-2 cursor-pointer transition-all duration-150 overflow-hidden
+              aria-label="Tampilkan penjelasan model Agile Scrum"
+              aria-pressed={activeModel === "agile"}
+              className={`w-full flex flex-col text-left rounded-2xl border-2 cursor-pointer transition-all duration-150 overflow-hidden
                 ${
                   activeModel === "agile"
                     ? "border-indigo-900 shadow-neo-blue"
@@ -99,7 +105,7 @@ export default function ModelComparison() {
               <div className="bg-white">
                 <AgileVisualization />
               </div>
-            </m.div>
+            </m.button>
           </div>
 
           {/* Model Matcher col */}
@@ -107,6 +113,20 @@ export default function ModelComparison() {
             <ModelMatcher />
           </div>
         </div>
+
+        {/* Model notes: makes card selection meaningful */}
+        <m.div
+          key={activeModel}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="mb-6 sm:mb-8 rounded-2xl border-2 border-slate-900 bg-brand-yellow/10 p-4 sm:p-5"
+        >
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-700 mb-1">
+            Catatan model aktif: {activeModel === "waterfall" ? "Waterfall" : "Agile Scrum"}
+          </p>
+          <p className="text-sm text-slate-700 leading-relaxed">{modelNotes[activeModel]}</p>
+        </m.div>
 
         {/* Comparison table: horizontal scroll on mobile */}
         <m.div
