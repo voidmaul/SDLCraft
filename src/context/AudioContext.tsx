@@ -11,11 +11,13 @@ import {
 import { AudioContext, type AudioContextType } from "./audioContextDef";
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
+  // Audio default MATI. Pengguna harus pernah mengaktifkannya secara eksplisit
+  // (tersimpan sebagai sdlc_audio_enabled = "true") agar suara diputar.
   const [muted, setMuted] = useState<boolean>(() => {
     try {
-      return localStorage.getItem("sdlc_audio_muted") === "true";
+      return localStorage.getItem("sdlc_audio_enabled") !== "true";
     } catch {
-      return false;
+      return true;
     }
   });
 
@@ -42,7 +44,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     const next = !mutedRef.current;
     mutedRef.current = next;
     try {
-      localStorage.setItem("sdlc_audio_muted", String(next));
+      // Simpan status "enabled" (kebalikan muted) agar default tetap mute
+      // sampai pengguna benar-benar mengaktifkan audio.
+      localStorage.setItem("sdlc_audio_enabled", String(!next));
     } catch {
       // ignore storage errors
     }
