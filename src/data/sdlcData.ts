@@ -1,3 +1,15 @@
+import { learningOutcomesByPhase, practiceByPhase } from "./learningOutcomes";
+import { glossaryByPhase } from "./glossary";
+
+export type SdlcPhaseId =
+  | "planning"
+  | "analysis"
+  | "design"
+  | "development"
+  | "testing"
+  | "deployment"
+  | "maintenance";
+
 export interface SdlcArtifact {
   inputs: string[];
   outputs: string[];
@@ -20,7 +32,7 @@ export interface SdlcPhaseTheme {
 }
 
 export interface SdlcPhase {
-  id: string;
+  id: SdlcPhaseId;
   number: number;
   name: string;
   nameId: string;
@@ -31,6 +43,9 @@ export interface SdlcPhase {
   artifacts: SdlcArtifact;
   caseStudy: SdlcCaseStudy;
   keyActivities: string[];
+  learningOutcomes: string[];
+  glossary: { term: string; definition: string }[];
+  practice: { prompt: string; expectedAnswer: string };
 }
 
 export const sdlcPhases: SdlcPhase[] = [
@@ -76,7 +91,7 @@ export const sdlcPhases: SdlcPhase[] = [
       outputs: [
         "Project Charter",
         "Feasibility Study Report (Studi Kelayakan)",
-        "Project Management Plan (PMP)",
+        "Project Management Plan",
         "Work Breakdown Structure (WBS)",
         "Gantt Chart / Timeline",
         "Risk Register Awal",
@@ -96,6 +111,9 @@ export const sdlcPhases: SdlcPhase[] = [
       highlight:
         "Output kunci: Project Charter yang disetujui Direktur RS, Studi Kelayakan menunjukkan ROI positif dalam 18 bulan.",
     },
+    learningOutcomes: learningOutcomesByPhase.planning,
+    glossary: glossaryByPhase.planning,
+    practice: practiceByPhase.planning,
   },
   {
     id: "analysis",
@@ -159,6 +177,9 @@ export const sdlcPhases: SdlcPhase[] = [
       highlight:
         "Output kunci: SRS setebal 60 halaman, DFD Level 1 & 2 untuk 5 subsistem, 47 Use Case Specification lengkap.",
     },
+    learningOutcomes: learningOutcomesByPhase.analysis,
+    glossary: glossaryByPhase.analysis,
+    practice: practiceByPhase.analysis,
   },
   {
     id: "design",
@@ -223,6 +244,9 @@ export const sdlcPhases: SdlcPhase[] = [
       highlight:
         "Output kunci: SDD 120 halaman, ERD 32 entitas, Figma prototype 80 screen dengan design system lengkap.",
     },
+    learningOutcomes: learningOutcomesByPhase.design,
+    glossary: glossaryByPhase.design,
+    practice: practiceByPhase.design,
   },
   {
     id: "development",
@@ -287,6 +311,9 @@ export const sdlcPhases: SdlcPhase[] = [
       highlight:
         "Output kunci: 1.200+ commit terstruktur, unit test coverage 85%, CI/CD pipeline fully automated.",
     },
+    learningOutcomes: learningOutcomesByPhase.development,
+    glossary: glossaryByPhase.development,
+    practice: practiceByPhase.development,
   },
   {
     id: "testing",
@@ -324,7 +351,7 @@ export const sdlcPhases: SdlcPhase[] = [
       inputs: [
         "SRS & Use Case Specification",
         "Source Code & Build Artifact",
-        "Test Plan Document",
+        "Test Plan Draft / SRS & Use Case Specification",
         "Database Schema",
       ],
       outputs: [
@@ -346,10 +373,13 @@ export const sdlcPhases: SdlcPhase[] = [
     caseStudy: {
       projectName: "Sistem Informasi Perpustakaan Universitas Regional",
       description:
-        "QA menyusun 185 test case dari 47 use case. Ditemukan 23 bug kritis selama blackbox testing, termasuk kesalahan kalkulasi denda keterlambatan. UAT dilaksanakan 2 iterasi bersama 15 staf perpustakaan sebelum sign-off.",
+        "QA menyusun 185 test case dari 28 use case. Ditemukan 23 bug kritis selama blackbox testing, termasuk kesalahan kalkulasi denda keterlambatan. UAT dilaksanakan 2 iterasi bersama 15 staf perpustakaan sebelum sign-off.",
       highlight:
         "Output kunci: 185 test case, 0 bug kritis tersisa sebelum UAT sign-off, Test Summary Report disetujui stakeholder.",
     },
+    learningOutcomes: learningOutcomesByPhase.testing,
+    glossary: glossaryByPhase.testing,
+    practice: practiceByPhase.testing,
   },
   {
     id: "deployment",
@@ -413,6 +443,9 @@ export const sdlcPhases: SdlcPhase[] = [
       highlight:
         "Output kunci: Zero-downtime deployment, 120 staf terlatih, monitoring aktif dengan alerting via Telegram Bot.",
     },
+    learningOutcomes: learningOutcomesByPhase.deployment,
+    glossary: glossaryByPhase.deployment,
+    practice: practiceByPhase.deployment,
   },
   {
     id: "maintenance",
@@ -476,5 +509,12 @@ export const sdlcPhases: SdlcPhase[] = [
       highlight:
         "Output kunci: Uptime 99.7%, semua CR dikategori Critical diselesaikan dalam SLA, roadmap v1.1 disetujui.",
     },
+    learningOutcomes: learningOutcomesByPhase.maintenance,
+    glossary: glossaryByPhase.maintenance,
+    practice: practiceByPhase.maintenance,
   },
 ];
+
+export function isSdlcPhaseId(value: string): value is SdlcPhaseId {
+  return sdlcPhases.some((phase) => phase.id === value);
+}
