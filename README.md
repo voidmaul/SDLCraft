@@ -44,7 +44,7 @@
 Dibangun dengan arsitektur modern (React 18, TypeScript, Tailwind CSS, dan Framer Motion), platform ini menolak metode belajar hafalan pasif. Setiap pengguna diajak untuk:
 1. **Menjelajahi** 7 fase SDLC dalam kanvas interaktif dan mencatat kemajuan belajar secara mandiri.
 2. **Mensimulasikan** pemilihan model pengembangan (*Waterfall* vs *Agile Scrum*) lewat *decision matrix* diagnostik.
-3. **Menguji Logika** melalui 10 soal studi kasus skenario industri riil dengan instant feedback analitis.
+3. **Menguji Logika** melalui 11 soal studi kasus ilustratif berbasis skenario industri dengan instant feedback analitis.
 4. **Mengklaim Lencana Kompetensi** yang bisa dibagikan melalui Instagram Story (rasio 9:16).
 
 ---
@@ -98,7 +98,10 @@ Jelajahi alur lengkap rekayasa perangkat lunak melalui visual pipeline 7 fase de
   - **Tujuan Utama (Objective)** fase.
   - **Peran Profesional Industri** yang bertanggung jawab (BA, SA, PO, QA, DevOps, DBA).
   - **Artefak Input & Output** standar industri (Project Charter, SRS, SDD, ERD, Test Scenario, Migration Script).
-  - **Studi Kasus Kontekstual** (SIMRS, E-Kampus, Marketplace UMKM, hingga Portal Layanan Publik).
+  - **Studi Kasus Ilustratif** (SIMRS, E-Kampus, Marketplace UMKM, hingga Portal Layanan Publik).
+  - **Capaian Pembelajaran & Glosarium**: dua capaian terukur per fase beserta istilah kunci yang dipakai di fase tersebut.
+  - **Latihan Aplikasi**: satu prompt singkat per fase dengan contoh jawaban yang dapat dibuka setelah mencoba.
+- **Navigasi Antar-Fase**: tombol *"Berikutnya"* di bawah panel detail memindahkan fokus ke fase selanjutnya tanpa menutup konteks belajar.
 
 <details>
 <summary><b>🔍 Klik untuk Melihat Ringkasan 7 Fase SDLC</b></summary>
@@ -124,10 +127,10 @@ Jelajahi alur lengkap rekayasa perangkat lunak melalui visual pipeline 7 fase de
 </p>
 
 Bukan hanya tabel statis, fitur ini menyajikan dua mode komparasi:
-1. **Visual Pipeline Flow**: Animasi aliran sekuensial linear *Waterfall* berdampingan dengan radar sprint iteratif 6-tahap *Agile Scrum* (Sprint Planning, Daily Scrum, Sprint Review, Retrospective, Backlog Refinement, Sprint Execution).
+1. **Visual Pipeline Flow**: Animasi aliran sekuensial linear *Waterfall* berdampingan dengan radar sprint iteratif 6-tahap *Agile Scrum* (Sprint Planning, Daily Scrum, Sprint Review, Retrospective, Product Backlog, Sprint Execution). Product Backlog di-refine secara berkelanjutan; refinement bukan event sprint resmi.
 2. **Interactive Model Matcher (Decision Engine)**:
-   - Pengguna menjawab 5 parameter karakteristik proyek (Stabilitas Kebutuhan, Urgensi Demo/Prototype, Keterlibatan Klien, Kepatuhan Regulasi/Dokumentasi, serta Skala Tim).
-   - Sistem secara cerdas menghitung persentase kecocokan dan merekomendasikan apakah proyek sebaiknya dieksekusi dengan model **Waterfall** atau **Agile Scrum**.
+   - Pengguna menjawab 5 kriteria berbobot: Stabilitas Kebutuhan (bobot 3), Kesiapan Demo Cepat (2), Keterlibatan Klien (1), Regulasi & Dokumentasi (3), serta Ukuran & Pengalaman Tim (1).
+   - Sistem menghitung dukungan berbobot untuk masing-masing model, menampilkan kontribusi tiap jawaban, lalu merekomendasikan **Waterfall** atau **Agile Scrum**. Bila dukungan kedua model sangat berimbang (selisih di bawah 20% total bobot), sistem menampilkan opsi **hybrid** alih-alih memaksakan satu model.
 
 <details>
 <summary><b>⚖️ Klik untuk Melihat 8 Kriteria Matriks Komparasi</b></summary>
@@ -138,7 +141,7 @@ Bukan hanya tabel statis, fitur ini menyajikan dua mode komparasi:
 | **Kejelasan Kebutuhan Awal** | ✅ Wajib lengkap & final | ✅ Dapat berkembang bertahap |
 | **Keterlibatan Klien** | ❌ Dominan di awal & akhir | ✅ Aktif setiap sprint review |
 | **Waktu Rilis Produk Pertama** | ❌ Lama (akhir siklus) | ✅ Cepat (tiap 2–4 minggu) |
-| **Kelengkapan Dokumentasi** | ✅ Sangat detail untuk audit | ❌ Fokus pada *working software* |
+| **Kelengkapan Dokumentasi** | ✅ Sangat detail untuk audit | ✅ Just-in-time; audit terpenuhi bila DoD disepakati |
 | **Prediktabilitas Biaya** | ✅ Terkunci sejak awal | ❌ Berubah mengikuti backlog |
 | **Deteksi Risiko Teknis** | ❌ Baru terlihat saat testing akhir | ✅ Terdeteksi dini per sprint |
 | **Karakteristik Tim** | ✅ Tim besar tersegmentasi | ✅ Tim kecil mandiri (5–9 orang) |
@@ -158,19 +161,23 @@ Bukan hanya tabel statis, fitur ini menyajikan dua mode komparasi:
 </p>
 
 Fitur kuis dirancang khusus untuk mengasah kemampuan *problem-solving* di lingkungan industri:
-- **Input Nama Peserta**: Formulir nama di layar awal dengan validasi ketat, tersimpan otomatis di `localStorage` agar tidak hilang jika halaman disegarkan.
+- **Input Nama Peserta**: Formulir nama di layar awal dengan validasi minimal 2 karakter, tersimpan otomatis di `localStorage` agar tidak hilang jika halaman disegarkan.
 - **Progres Kuis Tersimpan Otomatis**: Refresh halaman di tengah kuis tidak mengulang dari nol; skor terbaikmu juga tercatat dan tampil di layar awal.
-- **Ramah Reduced Motion**: Animasi dan confetti otomatis diminimalkan mengikuti preferensi sistem pengguna.
-- **10 Soal Berbasis Kasus Riil**: Mengangkat dilema nyata di industri (paritas database Staging vs Production, negosiasi scope creep, prioritisasi bug kritis, audit kelayakan finansial).
+- **Ramah Reduced Motion**: Animasi Framer Motion dan confetti mengikuti preferensi sistem pengguna. Catatan: rotasi dekoratif cincin orbit SVG pada visualisasi Agile adalah animasi transform yang pada sebagian browser dapat tetap berjalan; elemen ini murni dekoratif dan tidak membawa informasi.
+- **11 Soal Berbasis Studi Kasus Ilustratif**: Mengangkat dilema yang dirancang menyerupai praktik industri (paritas database Staging vs Production, negosiasi scope creep, prioritisasi bug kritis, audit kelayakan finansial, dan strategi branch).
 - **Instant Evaluasi Pemahaman (Real-Time Feedback)**:
   - ❌ **"Mengapa Opsi Ini Keliru"**: Membedah kesalahan logika dari opsi yang dipilih pengguna.
+  - 💡 **Petunjuk**: Memberi arahan singkat sebelum pengguna membaca pembahasan lengkap.
   - ✅ **"Pembahasan Jawaban Benar"**: Menguraikan dasar arsitektural dan praktik terbaik rekayasa perangkat lunak.
+  - 🔗 **Tautan Materi**: Tombol *"Lihat materi fase ini"* memindahkan fokus ke fase SDLC terkait (atau ke komparasi model untuk soal pemilihan model).
 - **Fitur Review Pembahasan Menyeluruh**:
-  - Layar ulasan khusus pasca-kuis untuk membaca kembali seluruh 10 soal dari awal hingga akhir lengkap dengan komparasi pilihan user vs kunci jawaban.
-- **Streak Combo Multiplier**: Merayakan akurasi beruntun dengan badge interaktif (🔥 3x Streak!, 5x Streak Legendaris!).
-- **Tingkatan Lencana Kompetensi**:
-  - Skor < 60% → 🥉 `Junior Analyst` *(Perlu penguatan konsep dasar)*
-  - Skor 60–85% → 🥈 `System Analyst` *(Pemahaman alur matang)*
+  - Layar ulasan khusus pasca-kuis untuk membaca kembali seluruh 11 soal dari awal hingga akhir lengkap dengan komparasi pilihan user vs kunci jawaban.
+  - **Peta Jawaban per Fase**: Ringkasan penguasaan tiap fase; klik salah satu baris untuk melompat ke pembahasan soal terkait.
+- **Streak Combo**: Merayakan akurasi beruntun dengan badge interaktif (🔥 3x Streak!, 5x Streak Legendaris!). Streak hanya bersifat selebrasi dan tidak mengubah perhitungan skor.
+- **Tingkatan Lencana Kompetensi** (ambang kelulusan tunggal `PASS_SCORE = 70`):
+  - Skor < 60% → 🥉 `Junior Analyst` *(Perlu penguatan konsep dasar; belum lulus)*
+  - Skor 60–69% → 🥈 `System Analyst` *(Progres baik; belum lulus)*
+  - Skor 70–85% → 🥈 `System Analyst` *(Lulus / pemahaman alur matang)*
   - Skor > 85% → 🥇 `Lead Solution Architect` *(Penguasaan arsitektur tingkat tinggi)*
 - **🎉 Confetti Celebration**: Hujan confetti dinamis via Canvas Confetti untuk skor kelulusan (≥ 70%).
 
@@ -235,7 +242,7 @@ Platform ini dilengkapi sistem efek suara sintetis murni (tanpa memerlukan file 
 ```
 SDLCraft/
 ├── .github/workflows/
-│   └── deploy.yml             # CI: lint → test → build → deploy GitHub Pages
+│   └── ci.yml                 # CI: lint → test → build (deploy oleh Vercel)
 ├── public/
 │   └── favicon.png            # Ikon topi wisuda emas khas SDLCraft
 ├── src/
@@ -248,7 +255,8 @@ SDLCraft/
 │   │   └── ErrorBoundary.tsx    # Penanganan error render global
 │   ├── context/               # AudioProvider (mute & SFX global)
 │   ├── hooks/                 # useAudio
-│   ├── data/                  # Konten 7 fase SDLC, 10 soal kuis & komparasi model
+│   ├── data/                  # Konten 7 fase SDLC, 11 soal kuis & komparasi model
+│   │                          # (sdlcData, learningOutcomes, glossary, quizData, comparisonData)
 │   ├── utils/                 # Audio synth, canvas badge & score badge + unit test
 │   ├── App.tsx                # Navbar, Hero, Footer & lazy-loaded sections
 │   ├── main.tsx               # Root bootstrap React DOM
@@ -316,9 +324,11 @@ npm run preview
 
 Output kompilasi produksi yang teroptimasi akan berada di direktori `dist/`.
 
+> 🚀 **Catatan deployment:** setiap push ke `main` otomatis di-deploy oleh **integrasi Git Vercel**. Workflow GitHub Actions pada `.github/workflows/ci.yml` hanya menjadi *quality gate* (lint → test → build) dan tidak melakukan deploy. Demo publik yang ditautkan di bagian atas README di-host di **Vercel** dan menggunakan basis kode serta perintah build yang sama.
+
 ---
 
-## 💡 Topik Kasus Industri yang Disajikan
+## 💡 Topik Studi Kasus Ilustratif yang Disajikan
 
 <details>
 <summary><b>📚 Klik untuk Melihat Skenario Masalah di Kuis Evaluasi</b></summary>
@@ -327,12 +337,13 @@ Output kompilasi produksi yang teroptimasi akan berada di direktori `dist/`.
 2. **Fase Planning**: Komponen studi kelayakan finansial (ROI & payback period) untuk menjawab pertanyaan CFO.
 3. **Fase Analysis**: Resolusi konflik kebutuhan antar stakeholder pada sistem informasi klinik.
 4. **Fase Analysis**: Scope creep integrasi 5 vendor mendadak → mekanisme Change Request formal.
-5. **Fase Design**: Normalisasi database (2NF/3NF) untuk tabel transaksi e-commerce yang redundan.
-6. **Fase Testing**: Change Request fitur payment gateway baru di tengah proyek Waterfall yang hampir selesai.
+5. **Fase Design**: Normalisasi database hingga 3NF untuk tabel transaksi e-commerce yang redundan.
+6. **Fase Development**: Change Request fitur payment gateway baru di tengah proyek Waterfall yang hampir selesai.
 7. **Fase Testing**: Bug triage 15 temuan (kritis/mayor/minor) dengan matriks severity-priority.
 8. **Fase Deployment**: Paritas environment Staging (PostgreSQL 15) vs Production (PostgreSQL 13).
 9. **Fase Maintenance**: Degradasi performa laporan HRD (3 → 45 menit) seiring pertumbuhan data.
-10. **Fase Planning**: Pemilihan model SDLC untuk startup fintech dengan regulasi dinamis & target demo cepat.
+10. **Pemilihan Model**: Rekomendasi model SDLC untuk startup fintech dengan regulasi dinamis & target demo cepat.
+11. **Fase Development**: Strategi branch, pull request, code review, dan CI sebelum merge ke `main`.
 
 </details>
 
@@ -344,7 +355,7 @@ Output kompilasi produksi yang teroptimasi akan berada di direktori `dist/`.
 - 🎯 **Product Owner (PO) / Project Manager (PM)** — Mengelola backlog, prioritas sprint, dan timeline rilis.
 - 💻 **Software Engineer (Frontend / Backend / Fullstack)** — Menulis clean code, unit test, dan integrasi API.
 - 🧪 **QA Engineer & UAT Tester** — Menyusun test scenario, bug tracking, dan memastikan kualitas software.
-- 🚀 **DevOps & Site Reliability Engineer (SRE)** — Mengelola CI/CD pipeline, parity environment, dan server uptime.
+- 🚀 **DevOps Engineer** — Mengelola CI/CD pipeline, parity environment, dan otomatisasi rilis.
 - 🗄️ **Database Administrator (DBA)** — Optimasi query, migrasi skema data, dan integritas transaksi.
 
 ---
