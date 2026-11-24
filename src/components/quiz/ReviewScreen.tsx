@@ -1,6 +1,6 @@
 import { m } from "framer-motion";
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
-import { quizQuestions } from "../../data/quizData";
+import { quizQuestions, getQuizPhaseLabel } from "../../data/quizData";
 import { OptionButton } from "./OptionButton";
 import { FeedbackCard } from "./FeedbackCard";
 import type { AnswerRecord } from "../../utils/scoreBadge";
@@ -16,10 +16,11 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
       <div className="flex items-center justify-between">
         <h3 className="font-black text-lg text-slate-900">Review Pembahasan</h3>
         <button
+          type="button"
           onClick={onRetry}
-          className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 border border-slate-200 hover:border-slate-900 px-3 py-1.5 rounded-lg transition-all"
+          className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-900 px-3 py-1.5 rounded-lg transition-all"
         >
-          <RefreshCw className="w-3.5 h-3.5" /> Coba Lagi
+          <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" /> Coba Lagi
         </button>
       </div>
       {answers.map((record, i) => {
@@ -29,11 +30,12 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
         return (
           <m.div
             key={record.questionId}
+            id={`review-soal-${q.id}`}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.04 }}
-            className="rounded-2xl border-2 border-slate-200 overflow-hidden"
+            className="rounded-2xl border-2 border-slate-200 overflow-hidden scroll-mt-24"
           >
             <div
               className={`px-5 py-3 flex items-center gap-3 border-b border-slate-100 ${
@@ -41,18 +43,18 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
               }`}
             >
               {record.isCorrect ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-700 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 flex-shrink-0" aria-hidden="true" />
               ) : (
-                <XCircle className="w-4 h-4 text-rose-700 flex-shrink-0" />
+                <XCircle className="w-4 h-4 text-rose-700 flex-shrink-0" aria-hidden="true" />
               )}
               <span className="text-xs font-black text-slate-700 uppercase tracking-wide">
-                Soal {q.id} · Fase {q.phase}
+                Soal {q.id} · Fase {getQuizPhaseLabel(q.phase)}
               </span>
             </div>
             <div className="p-5">
-              <p className="text-xs text-slate-500 italic mb-2 leading-relaxed">{q.scenario}</p>
+              <p className="text-xs text-slate-600 italic mb-2 leading-relaxed">{q.scenario}</p>
               <p className="font-black text-sm text-slate-900 mb-4">{q.question}</p>
-              <div className="space-y-2 mb-4" role="radiogroup" aria-label={`Pilihan jawaban soal ${q.id}`}>
+              <div className="space-y-2 mb-4">
                 {q.options.map((opt) => (
                   <OptionButton
                     key={opt.id}
@@ -60,8 +62,8 @@ export function ReviewScreen({ answers, onRetry }: ReviewScreenProps) {
                     text={opt.text}
                     selected={record.selectedOptionId === opt.id}
                     answered
+                    readOnly
                     isCorrect={opt.id === q.correctOptionId}
-                    onClick={() => {}}
                   />
                 ))}
               </div>

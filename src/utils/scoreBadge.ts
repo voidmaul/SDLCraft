@@ -1,7 +1,11 @@
 import { Star, Target, BookOpen } from "lucide-react";
 
+/** Ambang kelulusan tunggal yang dipakai kuis, confetti, dan lencana. */
+export const PASS_SCORE = 70;
+
 export interface AnswerRecord {
   questionId: number;
+  phaseId: string;
   selectedOptionId: string;
   isCorrect: boolean;
 }
@@ -14,6 +18,12 @@ export interface ScoreBadge {
   border: string;
   dark: string;
   icon: React.ElementType;
+  /** True bila skor memenuhi ambang kelulusan (PASS_SCORE). */
+  passed: boolean;
+}
+
+export function isPassingScore(score: number): boolean {
+  return score >= PASS_SCORE;
 }
 
 export function getScoreBadge(score: number): ScoreBadge {
@@ -26,26 +36,44 @@ export function getScoreBadge(score: number): ScoreBadge {
       border: "border-violet-900",
       dark: "bg-violet-900",
       icon: Star,
+      passed: true,
     };
-  } else if (score >= 60) {
+  }
+
+  if (score >= PASS_SCORE) {
     return {
       label: "System Analyst",
-      subtitle: "Pemahaman Alur Baik",
+      subtitle: "Lulus / Pemahaman alur matang",
       color: "text-sky-700",
       bg: "bg-sky-50",
       border: "border-sky-900",
       dark: "bg-sky-900",
       icon: Target,
-    };
-  } else {
-    return {
-      label: "Junior Analyst",
-      subtitle: "Perlu Penguatan Konsep",
-      color: "text-amber-700",
-      bg: "bg-amber-50",
-      border: "border-amber-900",
-      dark: "bg-amber-900",
-      icon: BookOpen,
+      passed: true,
     };
   }
+
+  if (score >= 60) {
+    return {
+      label: "System Analyst",
+      subtitle: "Progres baik — belum lulus",
+      color: "text-sky-700",
+      bg: "bg-sky-50",
+      border: "border-sky-900",
+      dark: "bg-sky-900",
+      icon: Target,
+      passed: false,
+    };
+  }
+
+  return {
+    label: "Junior Analyst",
+    subtitle: "Perlu penguatan konsep dasar",
+    color: "text-amber-700",
+    bg: "bg-amber-50",
+    border: "border-amber-900",
+    dark: "bg-amber-900",
+    icon: BookOpen,
+    passed: false,
+  };
 }

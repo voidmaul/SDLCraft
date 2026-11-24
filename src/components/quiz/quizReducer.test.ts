@@ -7,9 +7,9 @@ import {
 } from "./quizReducer";
 
 const questions = [
-  { id: 1, correctOptionId: "b", options: [{ id: "a" }, { id: "b" }, { id: "c" }] },
-  { id: 2, correctOptionId: "a", options: [{ id: "a" }, { id: "b" }, { id: "c" }] },
-  { id: 3, correctOptionId: "c", options: [{ id: "a" }, { id: "b" }, { id: "c" }] },
+  { id: 1, phase: "planning", correctOptionId: "b", options: [{ id: "a" }, { id: "b" }, { id: "c" }] },
+  { id: 2, phase: "analysis", correctOptionId: "a", options: [{ id: "a" }, { id: "b" }, { id: "c" }] },
+  { id: 3, phase: "testing", correctOptionId: "c", options: [{ id: "a" }, { id: "b" }, { id: "c" }] },
 ];
 
 function startAndAnswer(
@@ -21,6 +21,7 @@ function startAndAnswer(
   next = quizReducer(next, {
     type: "SUBMIT",
     questionId: question.id,
+    phaseId: question.phase,
     correctOptionId: question.correctOptionId,
   });
   return next;
@@ -42,6 +43,7 @@ describe("quizReducer", () => {
     state = quizReducer(state, {
       type: "SUBMIT",
       questionId: 1,
+      phaseId: "planning",
       correctOptionId: "b",
     });
     const unchanged = quizReducer(state, { type: "SELECT", optionId: "a" });
@@ -50,12 +52,13 @@ describe("quizReducer", () => {
 
   it("SUBMIT tanpa pilihan diabaikan; submit ganda tidak menduplikasi jawaban", () => {
     let state = quizReducer(initialQuizState, { type: "START" });
-    expect(quizReducer(state, { type: "SUBMIT", questionId: 1, correctOptionId: "b" })).toBe(state);
+    expect(quizReducer(state, { type: "SUBMIT", questionId: 1, phaseId: "planning", correctOptionId: "b" })).toBe(state);
     state = startAndAnswer(state, "b", questions[0]);
     expect(state.answers).toHaveLength(1);
     expect(state.answers[0].isCorrect).toBe(true);
+    expect(state.answers[0].phaseId).toBe("planning");
     expect(state.streak).toBe(1);
-    const again = quizReducer(state, { type: "SUBMIT", questionId: 1, correctOptionId: "b" });
+    const again = quizReducer(state, { type: "SUBMIT", questionId: 1, phaseId: "planning", correctOptionId: "b" });
     expect(again).toBe(state);
   });
 
@@ -92,6 +95,26 @@ describe("quizReducer", () => {
     const review = quizReducer(summary, { type: "REVIEW" });
     expect(review.quizState).toBe("review");
     expect(quizReducer(review, { type: "RETRY" })).toEqual(initialQuizState);
+  });
+
+  it("RETRY_CURRENT menghapus jawaban terakhir dan menghitung ulang streak", () => {
+    let state = quizReducer(initialQuizState, { type: "START" });
+    state = startAndAnswer(state, "b", questions[0]); // benar
+    state = quizReducer(state, { type: "NEXT", totalQuestions: 3 });
+    state = startAndAnswer(state, "b", questions[1]); // salah
+    expect(state.answers).toHaveLength(2);
+    expect(state.streak).toBe(0);
+
+    const retried = quizReducer(state, { type: "RETRY_CURRENT" });
+    expect(retried.answers).toHaveLength(1);
+    expect(retried.answered).toBe(false);
+    expect(retried.selectedOption).toBeNull();
+    expect(retried.streak).toBe(1);
+    expect(retried.currentIndex).toBe(1);
+
+    // Diabaikan saat belum ada jawaban yang dikonfirmasi.
+    const idle = quizReducer(quizReducer(initialQuizState, { type: "START" }), { type: "RETRY_CURRENT" });
+    expect(idle.answered).toBe(false);
   });
 });
 

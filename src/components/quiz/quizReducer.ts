@@ -14,10 +14,11 @@ export interface QuizSessionState {
 export type QuizAction =
   | { type: "START" }
   | { type: "SELECT"; optionId: string }
-  | { type: "SUBMIT"; questionId: number; correctOptionId: string }
+  | { type: "SUBMIT"; questionId: number; phaseId: string; correctOptionId: string }
   | { type: "NEXT"; totalQuestions: number }
   | { type: "REVIEW" }
-  | { type: "RETRY" };
+  | { type: "RETRY" }
+  | { type: "RETRY_CURRENT" };
 
 export const initialQuizState: QuizSessionState = {
   quizState: "idle",
@@ -50,6 +51,7 @@ export function quizReducer(state: QuizSessionState, action: QuizAction): QuizSe
           ...state.answers,
           {
             questionId: action.questionId,
+            phaseId: action.phaseId,
             selectedOptionId: state.selectedOption,
             isCorrect,
           },
@@ -76,6 +78,24 @@ export function quizReducer(state: QuizSessionState, action: QuizAction): QuizSe
     case "RETRY":
       return initialQuizState;
 
+    case "RETRY_CURRENT": {
+      if (state.quizState !== "active" || !state.answered || state.answers.length === 0) {
+        return state;
+      }
+      // Hapus rekaman terakhir agar soal aktif bisa dijawab ulang, lalu
+      // hitung ulang streak dari ekor jawaban yang tersisa.
+      const answers = state.answers.slice(0, -1);
+      let streak = 0;
+      for (let i = answers.length - 1; i >= 0 && answers[i].isCorrect; i--) streak++;
+      return {
+        ...state,
+        answers,
+        answered: false,
+        selectedOption: null,
+        streak,
+      };
+    }
+
     default:
       return state;
   }
@@ -86,6 +106,7 @@ export function quizReducer(state: QuizSessionState, action: QuizAction): QuizSe
 // sehingga aplikasi selalu jatuh kembali ke state idle yang bersih.
 interface QuestionShape {
   id: number;
+  phase: string;
   correctOptionId: string;
   options: { id: string }[];
 }
@@ -132,6 +153,7 @@ export function restoreQuizSession(
       }
       answers.push({
         questionId: question.id,
+        phaseId: question.phase,
         selectedOptionId: record.selectedOptionId,
         isCorrect: record.selectedOptionId === question.correctOptionId,
       });

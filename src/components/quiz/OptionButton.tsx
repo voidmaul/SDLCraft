@@ -7,7 +7,12 @@ interface OptionButtonProps {
   selected: boolean;
   answered: boolean;
   isCorrect: boolean;
-  onClick: () => void;
+  onClick?: () => void;
+  /** Mode baca-saja: render sebagai elemen statis, bukan tombol. */
+  readOnly?: boolean;
+  id?: string;
+  tabIndex?: number;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
 }
 
 export function OptionButton({
@@ -17,6 +22,10 @@ export function OptionButton({
   answered,
   isCorrect,
   onClick,
+  readOnly = false,
+  id,
+  tabIndex,
+  onKeyDown,
 }: OptionButtonProps) {
   let containerClass = "bg-white border-slate-200 hover:border-slate-900 hover:shadow-neo-sm cursor-pointer";
   let labelClass = "bg-slate-100 text-slate-500 border-slate-200";
@@ -26,11 +35,11 @@ export function OptionButton({
     if (isCorrect) {
       containerClass = "bg-emerald-50 border-emerald-900 shadow-neo-green cursor-default";
       labelClass = "bg-emerald-600 text-white border-emerald-700";
-      iconEl = <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />;
+      iconEl = <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" aria-hidden="true" />;
     } else if (selected && !isCorrect) {
       containerClass = "bg-rose-50 border-rose-900 cursor-default";
       labelClass = "bg-rose-600 text-white border-rose-700";
-      iconEl = <XCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />;
+      iconEl = <XCircle className="w-5 h-5 text-rose-500 flex-shrink-0" aria-hidden="true" />;
     } else {
       containerClass = "bg-white border-slate-100 opacity-50 cursor-default";
     }
@@ -39,15 +48,10 @@ export function OptionButton({
     labelClass = "bg-brand-dark text-brand-yellow border-brand-dark";
   }
 
-  return (
-    <m.button
-      whileHover={!answered ? { y: -1 } : {}}
-      whileTap={!answered ? { y: 1 } : {}}
-      onClick={!answered ? onClick : undefined}
-      role="radio"
-      aria-checked={selected}
-      className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150 ${containerClass}`}
-    >
+  const baseClass = `w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150 ${containerClass}`;
+
+  const content = (
+    <>
       <span
         className={`w-7 h-7 rounded-lg text-xs font-black flex items-center justify-center flex-shrink-0 uppercase border-2 ${labelClass}`}
       >
@@ -55,6 +59,31 @@ export function OptionButton({
       </span>
       <span className="text-sm text-slate-700 leading-relaxed flex-1">{text}</span>
       {iconEl}
+    </>
+  );
+
+  if (readOnly) {
+    return (
+      <div className={baseClass} aria-label={`Opsi ${optionId}: ${text}`}>
+        {content}
+      </div>
+    );
+  }
+
+  return (
+    <m.button
+      type="button"
+      id={id}
+      tabIndex={tabIndex}
+      onKeyDown={onKeyDown}
+      whileHover={!answered ? { y: -1 } : {}}
+      whileTap={!answered ? { y: 1 } : {}}
+      onClick={!answered ? onClick : undefined}
+      role="radio"
+      aria-checked={selected}
+      className={baseClass}
+    >
+      {content}
     </m.button>
   );
 }

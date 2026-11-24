@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useCallback } from "react";
 import { m, AnimatePresence, LazyMotion, domAnimation, MotionConfig } from "framer-motion";
 import {
   Layers,
@@ -115,15 +115,20 @@ function Navbar() {
     >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={scrollToHero}>
+        <button
+          type="button"
+          className="flex items-center gap-2.5 cursor-pointer text-left"
+          onClick={scrollToHero}
+          aria-label="Kembali ke bagian atas halaman"
+        >
           <div className="w-8 h-8 rounded-lg bg-brand-yellow flex items-center justify-center border-2 border-slate-900 shadow-neo-sm">
             <GraduationCap className="w-4 h-4 text-slate-900" strokeWidth={2.5} />
           </div>
           <div>
             <p className="text-sm font-black text-slate-900 leading-tight tracking-tight">SDLCraft</p>
-            <p className="text-[10px] text-slate-500 leading-tight font-mono">Belajar SDLC Interaktif</p>
+            <p className="text-[10px] text-slate-600 leading-tight font-mono">Belajar SDLC Interaktif</p>
           </div>
-        </div>
+        </button>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1.5" aria-label="Navigasi Utama">
@@ -201,7 +206,7 @@ function HeroSection() {
 
   const features = [
     { icon: Layers, label: "7 Alur Terarah", sub: "Pahami alur kerja tim dari nol sampai rilis" },
-    { icon: Terminal, label: "Studi Kasus Nyata", sub: "Kupas tuntas contoh proyek lapangan" },
+    { icon: Terminal, label: "Studi Kasus Ilustratif", sub: "Kupas tuntas contoh proyek lapangan" },
     { icon: Zap, label: "Simulator Model Kerja", sub: "Temukan kecocokan Waterfall dan Agile" },
     { icon: Users, label: "Kuis Praktis Interaktif", sub: "Asah insting analis dan raih lencana kamu" },
   ];
@@ -267,7 +272,7 @@ function HeroSection() {
                 <Icon className="w-4 h-4 text-slate-900" strokeWidth={2.5} />
               </div>
               <p className="text-slate-900 text-xs sm:text-sm font-black leading-snug">{label}</p>
-              <p className="text-slate-500 text-[10px] sm:text-xs mt-1 leading-relaxed">{sub}</p>
+              <p className="text-slate-600 text-[11px] sm:text-xs mt-1 leading-relaxed">{sub}</p>
             </m.div>
           ))}
         </div>
@@ -305,7 +310,12 @@ function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-10">
           <div>
-            <div className="flex items-center gap-3 mb-3 cursor-pointer" onClick={scrollToHero}>
+            <button
+              type="button"
+              className="flex items-center gap-3 mb-3 cursor-pointer text-left"
+              onClick={scrollToHero}
+              aria-label="Kembali ke bagian atas halaman"
+            >
               <div className="w-10 h-10 rounded-xl bg-brand-yellow border-2 border-slate-900 flex items-center justify-center shadow-neo-sm">
                 <GraduationCap className="w-5 h-5 text-slate-900" />
               </div>
@@ -313,7 +323,7 @@ function Footer() {
                 <p className="font-black text-slate-900 text-base tracking-tight">SDLCraft</p>
                 <p className="text-xs text-slate-500 font-mono">Belajar SDLC Interaktif</p>
               </div>
-            </div>
+            </button>
             <p className="text-xs text-slate-600 max-w-sm leading-relaxed">
               Ruang belajar interaktif bagi siapa saja yang ingin memahami alur kerja tim teknologi dengan cara yang seru dan mudah dipahami.
               Sangat cocok untuk rekan mahasiswa, pemula, maupun kamu yang sedang bersiap melangkah ke industri perangkat lunak.
@@ -346,7 +356,7 @@ function Footer() {
           <p className="text-center sm:text-left">
             © 2026 SDLCraft. Bersama memahami cara membangun aplikasi yang berkualitas.
           </p>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-slate-600">
             Dibuat dengan semangat belajar teknologi
           </p>
         </div>
@@ -356,17 +366,38 @@ function Footer() {
 }
 
 function MainContent() {
+  const [focusedPhaseId, setFocusedPhaseId] = useState<string | null>(null);
+
+  const scrollToSection = useCallback((id: NavSection) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const handleFocusPhase = useCallback(
+    (phaseId: string) => {
+      if (phaseId === "Model Selection") {
+        // "Model Selection" bukan fase roadmap; arahkan ke komparasi model.
+        scrollToSection("comparison");
+        return;
+      }
+      setFocusedPhaseId(phaseId);
+      scrollToSection("roadmap");
+    },
+    [scrollToSection]
+  );
+
+  const handleFocusHandled = useCallback(() => setFocusedPhaseId(null), []);
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans antialiased">
       <Navbar />
       <main>
         <HeroSection />
-        <SdlcRoadmap />
+        <SdlcRoadmap focusedPhaseId={focusedPhaseId} onFocusHandled={handleFocusHandled} />
         <Suspense fallback={<SectionFallback label="Waterfall vs Agile" />}>
           <ModelComparison />
         </Suspense>
         <Suspense fallback={<SectionFallback label="Kuis Studi Kasus" />}>
-          <QuizSection />
+          <QuizSection onFocusPhase={handleFocusPhase} />
         </Suspense>
       </main>
       <Footer />

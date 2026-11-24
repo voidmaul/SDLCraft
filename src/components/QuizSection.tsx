@@ -7,8 +7,9 @@ import {
   AlertCircle,
   ArrowRight,
   User,
+  RotateCcw,
 } from "lucide-react";
-import { quizQuestions } from "../data/quizData";
+import { quizQuestions, getQuizPhaseLabel } from "../data/quizData";
 import { useAudio } from "../hooks/useAudio";
 import { OptionButton } from "./quiz/OptionButton";
 import { FeedbackCard } from "./quiz/FeedbackCard";
@@ -35,7 +36,11 @@ function loadBestScore(): number | null {
   }
 }
 
-export default function QuizSection() {
+export default function QuizSection({
+  onFocusPhase,
+}: {
+  onFocusPhase?: (phaseId: string) => void;
+}) {
   const { playPop, playCorrect, playWrong, playStreak } = useAudio();
 
   // Seluruh state kuis dikelola reducer murni; sesi dipulihkan dari
@@ -121,6 +126,31 @@ export default function QuizSection() {
     playPop();
   };
 
+  const handleOptionKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    if (answered || !currentQuestion) return;
+    if (!["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft", "Home", "End"].includes(event.key)) {
+      return;
+    }
+    event.preventDefault();
+    const options = currentQuestion.options;
+    let nextIndex = index;
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+      nextIndex = (index + 1) % options.length;
+    } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      nextIndex = (index - 1 + options.length) % options.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = options.length - 1;
+    }
+    const nextOption = options[nextIndex];
+    handleSelectOption(nextOption.id);
+    document.getElementById(`quiz-option-${nextOption.id}`)?.focus();
+  };
+
   const handleSubmit = () => {
     if (!selectedOption || answered || !currentQuestion) return;
     const isCorrect = selectedOption === currentQuestion.correctOptionId;
@@ -133,6 +163,7 @@ export default function QuizSection() {
     dispatch({
       type: "SUBMIT",
       questionId: currentQuestion.id,
+      phaseId: currentQuestion.phase,
       correctOptionId: currentQuestion.correctOptionId,
     });
   };
@@ -140,6 +171,7 @@ export default function QuizSection() {
   const handleNext = () => dispatch({ type: "NEXT", totalQuestions });
   const handleReview = () => dispatch({ type: "REVIEW" });
   const handleRetry = () => dispatch({ type: "RETRY" });
+  const handleRetryCurrent = () => dispatch({ type: "RETRY_CURRENT" });
 
   return (
     <section id="quiz" className="py-14 sm:py-20 px-4 bg-slate-50">
@@ -159,7 +191,7 @@ export default function QuizSection() {
             Kuis Studi Kasus SDLC
           </h2>
           <p className="text-slate-500 max-w-md text-sm mt-2">
-            Tersedia <strong>{totalQuestions} soal seru berbasis skenario nyata</strong> dan bukan sekadar hafalan teori.
+            Tersedia <strong>{totalQuestions} soal seru berbasis skenario industri</strong> dan bukan sekadar hafalan teori.
             Raih lencana kompetensimu dan unduh badge IG Story!
           </p>
         </m.div>
@@ -178,7 +210,7 @@ export default function QuizSection() {
               </div>
               <h3 className="text-lg sm:text-xl font-black text-slate-900 mb-2">Siap Memulai Kuis?</h3>
               <p className="text-slate-500 text-sm mb-5 max-w-sm mx-auto leading-relaxed">
-                {totalQuestions} skenario nyata dari berbagai fase SDLC. Jawab dengan benar dan raih
+                {totalQuestions} skenario industri dari berbagai fase SDLC. Jawab dengan benar dan raih
                 streak combo!
               </p>
 
@@ -191,7 +223,7 @@ export default function QuizSection() {
                 ].map(({ v, l, c }) => (
                   <div key={l} className="bg-slate-50 rounded-xl p-3 border-2 border-slate-200">
                     <p className={`text-2xl font-black ${c}`}>{v}</p>
-                    <p className="text-slate-500 text-[10px] mt-0.5 font-bold">{l}</p>
+                    <p className="text-slate-600 text-[11px] mt-0.5 font-bold">{l}</p>
                   </div>
                 ))}
               </div>
@@ -219,7 +251,10 @@ export default function QuizSection() {
                     • Skor kurang dari 60% → <strong>Junior Analyst</strong>
                   </li>
                   <li>
-                    • Skor 60 sampai 85% → <strong>System Analyst</strong>
+                    • Skor 60–69% → <strong>System Analyst</strong> (belum lulus)
+                  </li>
+                  <li>
+                    • Skor 70–85% → <strong>System Analyst</strong> (lulus)
                   </li>
                   <li>
                     • Skor di atas 85% → <strong>Lead Solution Architect</strong>
@@ -229,49 +264,57 @@ export default function QuizSection() {
 
               {/* ── Name Input ── */}
               <div className="max-w-sm mx-auto mb-5 sm:mb-7 text-left">
-                <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
+                <label
+                  htmlFor="quiz-user-name"
+                  className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2"
+                >
                   Masukkan Nama Kamu untuk mendapatkan Badge!
                 </label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <User className="w-4 h-4 text-slate-400" />
+                    <User className="w-4 h-4 text-slate-500" aria-hidden="true" />
                   </span>
                   <input
+                    id="quiz-user-name"
                     type="text"
                     value={userName}
                     onChange={(e) => handleUserNameChange(e.target.value)}
                     placeholder="Contoh: Budi Santoso"
                     maxLength={48}
+                    aria-invalid={userName.length > 0 && !isNameValid}
+                    aria-describedby="quiz-name-feedback"
                     className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-900 bg-white text-slate-900 font-semibold text-sm
-                      placeholder:text-slate-400 placeholder:font-normal
+                      placeholder:text-slate-500 placeholder:font-normal
                       focus:outline-none focus:border-brand-yellow focus:ring-2 focus:ring-brand-yellow/30
                       transition-all"
                   />
                 </div>
-                <AnimatePresence>
-                  {userName.length > 0 && !isNameValid && (
-                    <m.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      className="text-xs text-rose-600 font-semibold mt-1.5 flex items-center gap-1"
-                    >
-                      <AlertCircle className="w-3 h-3" />
-                      Nama minimal 2 karakter ya!
-                    </m.p>
-                  )}
-                  {isNameValid && (
-                    <m.p
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -4 }}
-                      className="text-xs text-emerald-600 font-semibold mt-1.5 flex items-center gap-1"
-                    >
-                      <CheckCircle2 className="w-3 h-3" />
-                      Siap! Badge akan dicetak atas nama <strong>{userName.trim()}</strong>.
-                    </m.p>
-                  )}
-                </AnimatePresence>
+                <div id="quiz-name-feedback" aria-live="polite">
+                  <AnimatePresence>
+                    {userName.length > 0 && !isNameValid && (
+                      <m.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="text-xs text-rose-600 font-semibold mt-1.5 flex items-center gap-1"
+                      >
+                        <AlertCircle className="w-3 h-3" aria-hidden="true" />
+                        Nama minimal 2 karakter ya!
+                      </m.p>
+                    )}
+                    {isNameValid && (
+                      <m.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="text-xs text-emerald-600 font-semibold mt-1.5 flex items-center gap-1"
+                      >
+                        <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
+                        Siap! Badge akan dicetak atas nama <strong>{userName.trim()}</strong>.
+                      </m.p>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
 
               {/* Start button: full width on mobile */}
@@ -302,17 +345,24 @@ export default function QuizSection() {
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-slate-800 font-mono">
                       {currentIndex + 1}
-                      <span className="text-slate-400">/{totalQuestions}</span>
+                      <span className="text-slate-600">/{totalQuestions}</span>
                     </span>
                     <AnimatePresence>
                       {streak >= 2 && <StreakBanner streak={streak} />}
                     </AnimatePresence>
                   </div>
                   <span className="text-[10px] font-black px-2 py-1 rounded-lg bg-brand-dark text-brand-yellow border-2 border-brand-dark">
-                    {currentQuestion.phase}
+                    {getQuizPhaseLabel(currentQuestion.phase)}
                   </span>
                 </div>
-                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-300">
+                <div
+                  className="w-full bg-slate-200 rounded-full h-2 overflow-hidden border border-slate-300"
+                  role="progressbar"
+                  aria-valuenow={Math.round(progress)}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label="Progres kuis"
+                >
                   <m.div
                     className="h-full bg-brand-yellow rounded-full"
                     animate={{ width: `${progress}%` }}
@@ -340,22 +390,40 @@ export default function QuizSection() {
                     </p>
                   </div>
 
-                  <p className="font-black text-slate-900 text-base mb-4 leading-snug">
+                  <p id={`quiz-question-${currentQuestion.id}`} className="font-black text-slate-900 text-base mb-4 leading-snug">
                     {currentQuestion.question}
                   </p>
 
-                  <div className="space-y-2.5 mb-4" role="radiogroup" aria-label="Pilihan opsi jawaban">
-                    {currentQuestion.options.map((opt) => (
-                      <OptionButton
-                        key={opt.id}
-                        optionId={opt.id}
-                        text={opt.text}
-                        selected={selectedOption === opt.id}
-                        answered={answered}
-                        isCorrect={opt.id === currentQuestion.correctOptionId}
-                        onClick={() => handleSelectOption(opt.id)}
-                      />
-                    ))}
+                  <div
+                    className="space-y-2.5 mb-4"
+                    role="radiogroup"
+                    aria-labelledby={`quiz-question-${currentQuestion.id}`}
+                  >
+                    {currentQuestion.options.map((opt, index) => {
+                      const optionTabIndex = answered
+                        ? -1
+                        : selectedOption
+                          ? selectedOption === opt.id
+                            ? 0
+                            : -1
+                          : index === 0
+                            ? 0
+                            : -1;
+                      return (
+                        <OptionButton
+                          key={opt.id}
+                          id={`quiz-option-${opt.id}`}
+                          optionId={opt.id}
+                          text={opt.text}
+                          selected={selectedOption === opt.id}
+                          answered={answered}
+                          isCorrect={opt.id === currentQuestion.correctOptionId}
+                          tabIndex={optionTabIndex}
+                          onKeyDown={(event) => handleOptionKeyDown(event, index)}
+                          onClick={() => handleSelectOption(opt.id)}
+                        />
+                      );
+                    })}
                   </div>
 
                   {answered && selectedOption && (
@@ -363,10 +431,13 @@ export default function QuizSection() {
                       question={currentQuestion}
                       selectedOptionId={selectedOption}
                       isCorrect={selectedOption === currentQuestion.correctOptionId}
+                      phaseId={currentQuestion.phase}
+                      hint={currentQuestion.hint}
+                      onFocusPhase={onFocusPhase}
                     />
                   )}
 
-                  <div className="mt-5 flex justify-end">
+                  <div className="mt-5 flex flex-wrap justify-end gap-2">
                     {!answered ? (
                       <m.button
                         whileHover={{ y: -1 }}
@@ -384,24 +455,37 @@ export default function QuizSection() {
                         <CheckCircle2 className="w-4 h-4" />
                       </m.button>
                     ) : (
-                      <m.button
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        whileHover={{ y: -1 }}
-                        whileTap={{ y: 1 }}
-                        onClick={handleNext}
-                        className="flex items-center gap-2 px-6 py-3 bg-brand-yellow text-brand-dark border-2 border-brand-dark rounded-xl font-black text-sm hover:shadow-neo transition-all"
-                      >
-                        {currentIndex < totalQuestions - 1 ? (
-                          <>
-                            Soal Berikutnya <ChevronRight className="w-4 h-4" />
-                          </>
-                        ) : (
-                          <>
-                            Lihat Hasil <Trophy className="w-4 h-4" />
-                          </>
-                        )}
-                      </m.button>
+                      <>
+                        <m.button
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          whileHover={{ y: -1 }}
+                          whileTap={{ y: 1 }}
+                          onClick={handleRetryCurrent}
+                          className="flex items-center gap-2 px-4 py-3 bg-white text-slate-700 border-2 border-slate-300 rounded-xl font-bold text-sm hover:border-slate-900 hover:shadow-neo-sm transition-all"
+                        >
+                          <RotateCcw className="w-4 h-4" aria-hidden="true" />
+                          Ulangi soal ini
+                        </m.button>
+                        <m.button
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          whileHover={{ y: -1 }}
+                          whileTap={{ y: 1 }}
+                          onClick={handleNext}
+                          className="flex items-center gap-2 px-6 py-3 bg-brand-yellow text-brand-dark border-2 border-brand-dark rounded-xl font-black text-sm hover:shadow-neo transition-all"
+                        >
+                          {currentIndex < totalQuestions - 1 ? (
+                            <>
+                              Soal Berikutnya <ChevronRight className="w-4 h-4" />
+                            </>
+                          ) : (
+                            <>
+                              Lihat Hasil <Trophy className="w-4 h-4" />
+                            </>
+                          )}
+                        </m.button>
+                      </>
                     )}
                   </div>
                 </m.div>
@@ -417,6 +501,7 @@ export default function QuizSection() {
                 userName={userName.trim() || "Peserta"}
                 onReview={handleReview}
                 onRetry={handleRetry}
+                onFocusPhase={onFocusPhase}
               />
             </div>
           )}
