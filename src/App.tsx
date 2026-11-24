@@ -14,6 +14,7 @@ import {
   Volume2,
   VolumeX,
   Loader2,
+  Mail,
 } from "lucide-react";
 import SdlcRoadmap from "./components/SdlcRoadmap";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -328,6 +329,23 @@ function Footer() {
               Ruang belajar interaktif bagi siapa saja yang ingin memahami alur kerja tim teknologi dengan cara yang seru dan mudah dipahami.
               Sangat cocok untuk rekan mahasiswa, pemula, maupun kamu yang sedang bersiap melangkah ke industri perangkat lunak.
             </p>
+
+            <div className="mt-4 max-w-sm rounded-xl border-2 border-slate-900 bg-brand-yellow/20 px-4 py-3 shadow-neo-sm">
+              <p className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-slate-900 mb-1">
+                <Mail className="w-3.5 h-3.5" aria-hidden="true" />
+                Masukan & Laporan Bug
+              </p>
+              <p className="text-xs text-slate-700 leading-relaxed">
+                Bantu SDLCraft jadi lebih baik. Laporkan bug atau kirim saran ke{" "}
+                <a
+                  href="mailto:maulanairfaanmuh@gmail.com?subject=Masukan%20SDLCraft"
+                  className="font-bold text-slate-900 underline decoration-slate-900 decoration-2 underline-offset-2 hover:bg-brand-yellow/40 break-all"
+                >
+                  maulanairfaanmuh@gmail.com
+                </a>
+                .
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-8 text-xs">
@@ -345,19 +363,25 @@ function Footer() {
             </div>
             <div>
               <p className="font-black text-slate-900 mb-3 uppercase tracking-wider text-[11px]">Peran di Industri</p>
-              {["Business Analyst", "System Analyst", "Product Owner", "QA Engineer", "DevOps Engineer"].map((r) => (
-                <p key={r} className="text-slate-600 mb-2 font-medium">{r}</p>
+              {[
+                "Business Analyst",
+                "System Analyst",
+                "Product Owner",
+                "Software Developer",
+                "QA Engineer",
+                "DevOps Engineer",
+                "Database Administrator",
+              ].map((r) => (
+                <p key={r} className="text-slate-600 mb-1.5 font-medium">{r}</p>
               ))}
+              <p className="mt-1 text-[11px] italic text-slate-500">Peran lainnya...</p>
             </div>
           </div>
         </div>
 
-        <div className="border-t-2 border-slate-100 pt-6 text-xs flex flex-col sm:flex-row items-center justify-between gap-2 text-slate-500 font-mono">
-          <p className="text-center sm:text-left">
+        <div className="border-t-2 border-slate-100 pt-6 text-xs text-center text-slate-500 font-mono">
+          <p>
             © 2026 SDLCraft. Bersama memahami cara membangun aplikasi yang berkualitas.
-          </p>
-          <p className="text-[11px] text-slate-600">
-            Dibuat dengan semangat belajar teknologi
           </p>
         </div>
       </div>
